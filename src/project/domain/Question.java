@@ -5,7 +5,7 @@ import java.util.List;
 public class Question {
 	
 	private String title;
-	private List<Tag> tags;
+	private Tag[] tags = new Tag[5];
 	private User author;
 	private List<Comment> comments;
 	private Boolean isOpen;
@@ -14,7 +14,7 @@ public class Question {
 	
 	Question(String title, String text, List<Tag> tags, User author){
 		this.title = title;
-		this.tags = tags;
+		//this.tags = tags;
 		this.author = author;
 		this.text = text;
 		
@@ -28,13 +28,13 @@ public class Question {
 		this.title = title;
 	}
 	
-	public List<Tag> getTags() {
-		return tags;
-	}
-	
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
-	}
+//	public List<Tag> getTags() {
+//		return tags;
+//	}
+//	
+//	public void setTags(List<Tag> tags) {
+//		this.tags = tags;
+//	}
 	
 	public User getAuthor() {
 		return author;
@@ -74,6 +74,21 @@ public class Question {
 	
 	public void setBestAnswer(Answer bestAnswer) {
 		this.bestAnswer = bestAnswer;
+	}
+
+	public Tag[] getTags() {
+		return tags;
+	}
+
+	public void setTags(Tag[] tags) {
+		
+		if(tags.length < 5)
+			this.tags = tags;
+		
+		else
+			for(int i = 0; i < 5; i++)
+				this.tags[i] = tags[i];
+		
 	}
 	
 }
