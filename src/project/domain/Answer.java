@@ -8,7 +8,7 @@ public class Answer {
 	private String text;
 	private List<Comment> comments;
 	
-	Answer(User author, String text){
+	public Answer(User author, String text){
 		this.author = author;
 		this.text = text;		
 	}

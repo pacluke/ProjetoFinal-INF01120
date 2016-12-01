@@ -5,7 +5,7 @@ public class Comment {
 	private User author;
 	private String text;
 	
-	Comment(String text, User author){
+	public Comment(String text, User author){
 		this.author = author;
 		this.text = text;
 	}

@@ -12,7 +12,7 @@ public class Question {
 	private String text;
 	private Answer bestAnswer;
 	
-	Question(String title, String text, List<Tag> tags, User author){
+	public Question(String title, String text, List<Tag> tags, User author){
 		this.title = title;
 		//this.tags = tags;
 		this.author = author;
