@@ -111,8 +111,8 @@ public class UserTest {
 		
 		assertTrue(userAnon.getCredential() == Credential.ADMIN);
 		assertTrue(userReg.getCredential() == Credential.ANONYMOUS);
-		assertTrue(userMod.getCredential() == Credential.MODERATOR);
-		assertTrue(userAdm.getCredential() == Credential.ADMIN);
+		assertTrue(userMod.getCredential() == Credential.REGISTERED_USER);
+		assertTrue(userAdm.getCredential() == Credential.MODERATOR);
 	}
 	
 	@Test
