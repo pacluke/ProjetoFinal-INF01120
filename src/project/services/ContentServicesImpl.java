@@ -1,47 +1,129 @@
 package project.services;
 
+import java.util.List;
+
+import project.DataBase.dataBaseImpl;
 import project.domain.Answer;
 import project.domain.Comment;
+import project.domain.Credential;
 import project.domain.Question;
 import project.domain.Tag;
 import project.domain.User;
 
 public class ContentServicesImpl implements ContentServices {
+	
+	
+	public User actualUser;
+	private final dataBaseImpl database;
 
-	@Override
-	public Question addQuestion(String title, String Text, User user, Tag[] tags) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+	//Credential c1 = new Credential(1);
+	
+
+	public ContentServicesImpl(dataBaseImpl database, User actualUser) {
+		this.database = database;
+		this.actualUser = actualUser;
 	}
 
 	@Override
-	public Answer answerQuestion(Question question, String Text, User user) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+	public Question addQuestion(String title, String text, User user, List<Tag> tags) {			//RENAN
+		
+
+		Question q1 = new Question(title, text, tags, user);
+		
+		if(checkPermission(user, Credential.REGISTERED_USER))
+		{
+			database.insertQuestion(q1);
+			return q1;
+		}
+		
+		else
+		return q1;		
+		
+	}
+
+	@Override
+	public Answer answerQuestion(Question question, String text, User user) {			//RENAN
+
+		Answer a1 = new Answer(user, text);
+		
+		if((checkPermission(user, Credential.REGISTERED_USER)) && (question.getIsOpen()))	//user needs to be registered AND question needs to be open
+		{
+			database.insertAnswer(a1, question);
+			return a1;
+		}
+		
+		else
+		return a1;
 	}
 
 	@Override
 	public Comment addComment(String text, User user, Question question, Answer answer) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+		
+		Comment c1 = new Comment(text, user);
+		
+		if((checkPermission(user, Credential.REGISTERED_USER)) && (question.getIsOpen()))	//user needs to be registered AND question needs to be open
+		{
+			database.addComment(c1, question);
+			return c1;
+		}
+		
+		else
+		return c1;
 	}
 
 	@Override
-	public Question selectBestAnswer(Question question, Answer answer) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+	public Question selectBestAnswer(Question question, User user, Answer answer) {			//RENAN
+		
+		
+		question.setBestAnswer(answer);
+		
+		if((user == question.getAuthor()) ||  (checkPermission(user, Credential.MODERATOR)) )	//question gets updated either if the person
+		{															//doing it is the author or if it's a moderator or higher.
+			database.upDateQuestion(question);
+			return question;
+		}
+		
+		else
+		return question;		
+		
 	}
 
 	@Override
 	public Question closeQuestion(User user, Question question) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+		
+		question.setIsOpen(false);
+		
+		if(checkPermission(user, Credential.MODERATOR))	//question gets updated only if a moderator or higher is doing it
+		{															
+			database.upDateQuestion(question);
+			return question;
+		}
+		
+		else
+		return question;	
 	}
 
 	@Override
-	public Question editQuestion(User user, Question question) {			//RENAN
-		// TODO Auto-generated method stub
-		return null;
+	public Question editQuestion(User user, String text, Question question) {			//RENAN
+		question.setText(text);
+		
+		if((user == question.getAuthor()) ||  (checkPermission(user, Credential.MODERATOR)) )	//question gets updated either if the person
+		{															//doing it is the author or if it's a moderator or higher.
+			database.upDateQuestion(question);
+			return question;
+		}
+		
+		else
+		return question;
+	}
+	
+	@Override
+	public boolean checkPermission(User user, Credential serviceCredential) {		//RENAN
+		
+		if (user.getCredential().getValue() >= serviceCredential.getValue())	//gets permission (true) if its credentials are equal
+			return true;										//or better than the ones needed.
+		else
+			return false;
 	}
 
 	@Override
@@ -57,25 +139,25 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public Question[] searchQuestion(String text, String Category) {			//LISI
+	public List<Question> searchQuestion(String text, String Category) {			//LISI
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Question[] viewQuestions() {											//LISI
+	public List<Question> viewQuestions() {											//LISI
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Comment[] viewComments(Question question) {							//LISI
+	public List<Comment> viewComments(Question question) {							//LISI
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Answer[] viewAnswers(Question question) {							//LISI
+	public List<Answer> viewAnswers(Question question) {							//LISI
 		// TODO Auto-generated method stub
 		return null;
 	}
