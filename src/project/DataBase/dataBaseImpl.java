@@ -1,10 +1,8 @@
 package project.DataBase;
 
-import javax.xml.stream.events.Comment;
 
-import project.domain.Answer;
-import project.domain.Question;
-import project.domain.User;
+
+import project.domain.*;
 
 public class dataBaseImpl implements database{
 
@@ -28,12 +26,13 @@ public class dataBaseImpl implements database{
 
 	@Override
 	public Question insertQuestion(Question question) {
-		// TODO Auto-generated method stub
+		
+		
 		return null;
 	}
 
 	@Override
-	public Answer insertAnswer(Answer answer) {
+	public Answer insertAnswer(Answer answer, Question question) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -45,7 +44,7 @@ public class dataBaseImpl implements database{
 	}
 
 	@Override
-	public Question addComment(String text, User user, Question question) {
+	public Question addComment(Comment comment, Question question) {
 		// TODO Auto-generated method stub
 		return null;
 	}
