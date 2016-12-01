@@ -26,14 +26,13 @@ public class AnswerTest {
 	 */
 	
 	@Before
-	public void setUp(){	
-		
-		user1 = new User("Marisa", "marisa@bol.com", 002, false, Credential.REGISTERED_USER);
-		user2 = new User("Joana", "joana@yahoo.com", 003, false, Credential.ADMIN);
-		user3 = new User("Alberto", "alberto@bol.com", 007, false, Credential.REGISTERED_USER);
-		user4 = new User("Afrodite", "afrodite@hotmail.com", 309, false, Credential.MODERATOR);
-		user5 = new User("Dennis", "dennis@yahoo.com", 254, false, Credential.REGISTERED_USER);
-		user6 = new User("Florentina", "florentina@icloud.com", 192, false, Credential.REGISTERED_USER);
+	public void setUp()throws Exception{		
+		user1 = new User("Marisa", "marisa@bol.com", 002, "qwerqwe", false, Credential.REGISTERED_USER);
+		user2 = new User("Joana", "joana@yahoo.com", 003, "qwerqwe", false, Credential.ADMIN);
+		user3 = new User("Alberto", "alberto@bol.com", 007, "qwerqwe", false, Credential.REGISTERED_USER);
+		user4 = new User("Afrodite", "afrodite@hotmail.com", 309, "qwerqwe", false, Credential.MODERATOR);
+		user5 = new User("Dennis", "dennis@yahoo.com", 254, "qwerqwe", false, Credential.REGISTERED_USER);
+		user6 = new User("Florentina", "florentina@icloud.com", 192, "qwerqwe", false, Credential.REGISTERED_USER);
 		
 		comment1 = new Comment("Isso é um comentário!", user1);
 		comment2 = new Comment("Isso também é um comentário!", user2);

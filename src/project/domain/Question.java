@@ -5,18 +5,20 @@ import java.util.List;
 public class Question {
 	
 	private String title;
-	private Tag[] tags = new Tag[5];
+	private List<Tag> tags;
 	private User author;
 	private List<Comment> comments;
 	private Boolean isOpen;
 	private String text;
+	private List<Answer> answers;
 	private Answer bestAnswer;
 	
 	public Question(String title, String text, List<Tag> tags, User author){
 		this.title = title;
-		//this.tags = tags;
+		this.tags = tags;
 		this.author = author;
 		this.text = text;
+		this.isOpen = true;
 		
 	}
 	
@@ -27,14 +29,6 @@ public class Question {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
-//	public List<Tag> getTags() {
-//		return tags;
-//	}
-//	
-//	public void setTags(List<Tag> tags) {
-//		this.tags = tags;
-//	}
 	
 	public User getAuthor() {
 		return author;
@@ -76,19 +70,21 @@ public class Question {
 		this.bestAnswer = bestAnswer;
 	}
 
-	public Tag[] getTags() {
+	public List<Tag> getTags() {
 		return tags;
 	}
 
-	public void setTags(Tag[] tags) {
-		
-		if(tags.length < 5)
+	public void setTags(List<Tag> tags) {
 			this.tags = tags;
 		
-		else
-			for(int i = 0; i < 5; i++)
-				this.tags[i] = tags[i];
-		
+	}
+
+	public List<Answer> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Answer> answers) {
+		this.answers = answers;
 	}
 	
 }

@@ -25,8 +25,8 @@ public class CommentTest {
 
 	@Before
 	public void setUp()throws Exception{
-		user1 = new User("Marisa", "marisa@bol.com", 002, false, Credential.REGISTERED_USER);
-		user2 = new User("Joana", "joana@yahoo.com", 003, false, Credential.ADMIN);
+		user1 = new User("Marisa", "marisa@bol.com", 002, "qwerqwe", false, Credential.REGISTERED_USER);
+		user2 = new User("Joana", "joana@yahoo.com", 003, "qwerqwe", false, Credential.ADMIN);
 		comment1 = new Comment("Isso é um comentário!", user1);
 		comment2 = new Comment("Isso também é um comentário!", user2);
 	}

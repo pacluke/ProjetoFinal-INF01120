@@ -22,9 +22,9 @@ public class UserTest {
 	@Before
 	public void setUp() throws Exception{
 		userAnon = new User();
-		userReg = new User("Joao", "joao@gmail.com", 001, false, Credential.REGISTERED_USER);
-		userMod = new User("Marisa", "marisa@bol.com", 002, false, Credential.MODERATOR);
-		userAdm = new User("Joana", "joana@yahoo.com", 003, false, Credential.ADMIN);
+		userReg = new User("Joao", "joao@gmail.com", 001, "qwerqwe", false, Credential.REGISTERED_USER);
+		userMod = new User("Marisa", "marisa@bol.com", 002, "ewrwer", false, Credential.MODERATOR);
+		userAdm = new User("Joana", "joana@yahoo.com", 003, "qweiuqweyrrqwe", false, Credential.ADMIN);
 	}
 	
 	@Test
@@ -137,4 +137,27 @@ public class UserTest {
 		assertTrue(userAdm.getIsBlocked());
 	}
 	
+	@Test
+	public void getPasswordTest(){
+		assertTrue(userAnon.getEmail() == "Anonymous");
+		assertTrue(userReg.getEmail() == "joao@gmail.com");
+		assertTrue(userMod.getEmail() == "marisa@bol.com");
+		assertTrue(userAdm.getEmail() == "joana@yahoo.com");
+	}
+	
+	@Test
+	public void setPasswordTest(){
+		
+		userAnon.setPassword("iuAHSDU");
+		userReg.setPassword("ijsad7saiudJ");
+		userMod.setPassword("7asydiua");
+		userAdm.setPassword("987987asd");
+		
+		assertTrue(userAnon.getPassword() == "iuAHSDU");
+		assertTrue(userReg.getPassword() == "ijsad7saiudJ");
+		assertTrue(userMod.getPassword() == "7asydiua");
+		assertTrue(userAdm.getPassword() == "987987asd");
+	}
+
+
 }

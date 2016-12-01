@@ -7,6 +7,7 @@ public class User {
 	private long studentID;
 	private Boolean isBlocked;
 	private Credential credential;
+	private String password;
 	
 	public User(){	
 		this.credential = Credential.ANONYMOUS;
@@ -16,12 +17,13 @@ public class User {
 		this.name = "Anonymous";
 	}
 	
-	public User(String name, String email, long studentID, Boolean isBlocked, Credential credential){
+	public User(String name, String email, long studentID, String password, Boolean isBlocked, Credential credential){
 		this.credential = credential;
 		this.email = email;
 		this.studentID = studentID;
 		this.isBlocked = isBlocked;
-		this.name = name;		
+		this.name = name;
+		this.setPassword(password);
 	}
 	
 	public String getName() {
@@ -62,6 +64,14 @@ public class User {
 	
 	public void setCredential(Credential credential) {
 		this.credential = credential;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 
