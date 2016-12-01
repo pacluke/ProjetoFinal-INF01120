@@ -6,12 +6,21 @@ import project.domain.*;
 
 interface ContentServices extends Services {
 	
+<<<<<<< HEAD
 	public boolean addQuestion(String title, String text, User user, List<Tag> tags);
 	public boolean answerQuestion(Question question, String text, User user);
 	public boolean addComment (String text, User user, Question question, Answer answer); 
 	public boolean selectBestAnswer(Question question, User user,  Answer answer);
 	public boolean closeQuestion(User user, Question question);
 	public boolean editQuestion(User user, String text, Question question);
+=======
+	public Question addQuestion(String title, String text, User user, List<Tag> tags);
+	public Answer answerQuestion(Question question, String text, User user);
+	public Comment addComment (String text, User user, Question question, Answer answer); 
+	public Question selectBestAnswer(Question question, User user,  Answer answer);
+	public Question closeQuestion(User user, Question question);
+	public Question editQuestion(User user, String text, Question question);
+>>>>>>> b3f03f087543592775a8c3a669bace8f1224f5d2
 	public boolean checkPermission(User user, Credential serviceCredential);
 	public boolean removeComment(User user, Comment comment);	//returns false in case the user doesnt have the permission to remove it
 	public boolean removeQuestion(User user, Question question);	//returns false in case the user doesnt have the permission to remove it
