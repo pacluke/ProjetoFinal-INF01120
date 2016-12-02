@@ -128,38 +128,61 @@ public class ContentServicesImpl implements ContentServices {
 
 	@Override
 	public boolean removeComment(User user, Comment comment) {			//LISI
-		// TODO Auto-generated method stub
+		
+		if((user ==comment.getAuthor()) ||  (checkPermission(user, Credential.MODERATOR)) )	
+		{															
+			dataBaseImpl database = new dataBaseImpl();
+			database.removeComment(comment, user);
+			return true;
+		}
+
+		else 
 		return false;
+		
 	}
 
 	@Override
 	public boolean removeQuestion(User user, Question question) {			//LISI
-		// TODO Auto-generated method stub
+		
+		if((user == question.getAuthor()) ||  (checkPermission(user, Credential.MODERATOR)) )	
+		{															
+			dataBaseImpl database = new dataBaseImpl();
+			database.removeQuestion(question);
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public List<Question> searchQuestion(String text, String Category) {			//LISI
-		// TODO Auto-generated method stub
-		return null;
+		
+		dataBaseImpl database = new dataBaseImpl();
+		List<Question> questions = database.findQuestion(text, Category);
+		
+		return questions;
 	}
-
+	
 	@Override
 	public List<Question> viewQuestions() {											//LISI
-		// TODO Auto-generated method stub
-		return null;
+	
+		dataBaseImpl database = new dataBaseImpl();
+		List<Question> questions = database.showQuestions();
+		
+		return questions;
 	}
 
 	@Override
 	public List<Comment> viewComments(Question question) {							//LISI
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<Comment> comments = question.getComments();
+		return comments;
 	}
 
 	@Override
 	public List<Answer> viewAnswers(Question question) {							//LISI
-		// TODO Auto-generated method stub
-		return null;
+
+		List<Answer> answers = question.getAnswers();
+		return answers;
 	}
 
 }

@@ -152,5 +152,112 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		
 	}
 	
+//TESTES DA LISI
+	
+	@Test
+	public void removeCommentTest() {		
+		
+		Comment c1 = new Comment("Não entendi sua pergunta.", userReg);
+		Comment c2 = new Comment("Você devia ser mais específico.", userAnon);
+	
+		assertTrue(csUser.removeComment(userReg, c1));
+		assertTrue(csAdm.removeComment(userAdm, c2));
+		assertFalse(csAnon.removeComment(userAnon, c2));
+		assertTrue(csMod.removeComment(userMod, c1));
+		
+		
+	}
+	@Test
+    public void removeQuestionTest() {			//LISI
+			
+
+    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userReg);
+    	Question q2 = new Question("Minha Pergunta", "Ola, sou usuario registrado, excluir uma pergunta?", listaTag, userReg);
+    	Question q3 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTag, userMod);
+		
+		assertTrue(csUser.removeQuestion(userReg, q1));
+		assertFalse(csUser.removeQuestion(userReg, q3));
+		assertFalse(csAnon.removeQuestion(userAnon, q2));
+		assertTrue(csMod.removeQuestion(userMod, q2));
+		
+		
+	}
+
+	@Test
+    public void searchQuestionTest () {
+			
+    	Tag tag1 = new Tag("Perguntas");
+    	
+    	List<Tag> listaTagAux = new ArrayList<>();
+    	listaTagAux.add(tag1);
+    	
+    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTagAux, userMod);
+    	Question q2 = new Question("Minha Pergunta", "Qual o dia das aulas de OrgB?", listaTag, userMod);
+    	
+    	List<Question> questions = csMod.searchQuestion("excluir perguntas", "Perguntas");
+    	
+    	assertTrue(questions.contains(q1));
+    	assertFalse(questions.contains(q2));
+		
+	}
+		
+	@Test
+	public void viewQuestionsTest() {											
+		
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userReg);
+    	Question q2 = new Question("Minha Pergunta", "Ola, sou usuario registrado, excluir uma pergunta?", listaTag, userReg);
+    	Question q3 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTag, userReg);
+    	
+		List<Question> allQuestions =  new ArrayList<>();
+		allQuestions.add(q1);
+		allQuestions.add(q2);
+		allQuestions.add(q3);
+		
+		assertEquals(allQuestions, csUser.viewQuestions());
+		assertTrue(allQuestions.size() == csUser.viewQuestions().size());
+		
+		allQuestions.remove(1);
+		
+		assertFalse(allQuestions.size() == csUser.viewQuestions().size());
+	}
+	
+
+	@Test
+	public void viewCommentsTest() {							//LISI
+	
+		List <Comment> listaComment = new ArrayList<>();
+		
+		Comment c1 = new Comment("Parece que sim!", userReg);
+		listaComment.add(c1);
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userReg);
+		q1.setComments(listaComment);
+		
+		assertEquals(listaComment, q1.getComments());
+		assertFalse(q1.getComments().size() == 0);
+		assertTrue(q1.getComments().size() == 1);
+		
+	}
+
+	@Test
+	public void viewAnswersTest() {							//LISI
+	
+	    List <Answer> listaAnswers = new ArrayList<>();
+		
+		Answer a1 = new Answer( userReg, "Parece que sim!");
+		Answer a2 = new Answer( userReg, "Acho que não!");
+		
+		listaAnswers.add(a1);
+		listaAnswers.add(a2);
+		
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso editar minhas perguntas?", listaTag, userReg);
+		q1.setAnswers(listaAnswers);
+		q1.setBestAnswer(a1);
+		
+		assertEquals(listaAnswers, q1.getAnswers());
+		assertFalse(q1.getAnswers().size() == 1);
+		assertTrue(q1.getAnswers().size() == 2);
+		assertEquals(a1,q1.getBestAnswer());
+	}
+	
 
 }

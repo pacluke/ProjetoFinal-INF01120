@@ -1,6 +1,6 @@
 package project.DataBase;
 
-
+import java.util.List;
 
 import project.domain.*;
 
@@ -70,6 +70,18 @@ public class dataBaseImpl implements database{
 	@Override
 	public Question insertBestAnswer(Question question) {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Question> findQuestion(String text, String Category) {
+		
+		return null;
+	}
+	
+	@Override
+    public List<Question> showQuestions() {
+		
 		return null;
 	}
 	
