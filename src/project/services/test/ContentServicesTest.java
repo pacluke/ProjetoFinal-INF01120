@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import project.DataBase.dataBaseImpl;
+import project.DataBase.DataBaseImpl;
 import project.domain.*;
 import project.services.*;
 
@@ -22,7 +22,7 @@ public class ContentServicesTest {
 	User userMod;
 	User userAdm;	
 		
-	dataBaseImpl database;
+	DataBaseImpl database;
 	
 	ContentServicesImpl csAnon = new ContentServicesImpl(database, userAnon);
 	ContentServicesImpl csUser = new ContentServicesImpl(database, userReg);
@@ -154,19 +154,20 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 	
 //TESTES DA LISI
 	
-	@Test
-	public void removeCommentTest() {		
-		
-		Comment c1 = new Comment("Não entendi sua pergunta.", userReg);
-		Comment c2 = new Comment("Você devia ser mais específico.", userAnon);
-	
-		assertTrue(csUser.removeComment(userReg, c1));
-		assertTrue(csAdm.removeComment(userAdm, c2));
-		assertFalse(csAnon.removeComment(userAnon, c2));
-		assertTrue(csMod.removeComment(userMod, c1));
-		
-		
-	}
+//	@Test
+//	public void removeCommentTest() {		
+//		
+//		Comment c1 = new Comment("NÃ£o entendi sua pergunta.", userReg);
+//		Comment c2 = new Comment("VocÃª devia ser mais especÃ­fico.", userAnon);
+//		
+//	
+//		assertTrue(csUser.removeComment(userReg, c1));
+//		assertTrue(csAdm.removeComment(userAdm, c2));
+//		assertFalse(csAnon.removeComment(userAnon, c2));
+//		assertTrue(csMod.removeComment(userMod, c1));
+//		
+//		
+//	}
 	@Test
     public void removeQuestionTest() {			//LISI
 			
@@ -183,23 +184,23 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		
 	}
 
-	@Test
-    public void searchQuestionTest () {
-			
-    	Tag tag1 = new Tag("Perguntas");
-    	
-    	List<Tag> listaTagAux = new ArrayList<>();
-    	listaTagAux.add(tag1);
-    	
-    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTagAux, userMod);
-    	Question q2 = new Question("Minha Pergunta", "Qual o dia das aulas de OrgB?", listaTag, userMod);
-    	
-    	List<Question> questions = csMod.searchQuestion("excluir perguntas", "Perguntas");
-    	
-    	assertTrue(questions.contains(q1));
-    	assertFalse(questions.contains(q2));
-		
-	}
+//	@Test
+//    public void searchQuestionTest () {
+//			
+//    	Tag tag1 = new Tag("Perguntas");
+//    	
+//    	List<Tag> listaTagAux = new ArrayList<>();
+//    	listaTagAux.add(tag1);
+//    	
+//    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTagAux, userMod);
+//    	Question q2 = new Question("Minha Pergunta", "Qual o dia das aulas de OrgB?", listaTag, userMod);
+//    	
+//    	List<Question> questions = csMod.searchQuestion("excluir perguntas", "Perguntas");
+//    	
+//    	assertTrue(questions.contains(q1));
+//    	assertFalse(questions.contains(q2));
+//		
+//	}
 		
 	@Test
 	public void viewQuestionsTest() {											
@@ -244,7 +245,7 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 	    List <Answer> listaAnswers = new ArrayList<>();
 		
 		Answer a1 = new Answer( userReg, "Parece que sim!");
-		Answer a2 = new Answer( userReg, "Acho que não!");
+		Answer a2 = new Answer( userReg, "Acho que nï¿½o!");
 		
 		listaAnswers.add(a1);
 		listaAnswers.add(a2);

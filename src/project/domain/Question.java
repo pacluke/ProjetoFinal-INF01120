@@ -1,6 +1,7 @@
 package project.domain;
 
 import java.util.List;
+import java.util.Date;
 
 public class Question {
 	
@@ -12,6 +13,7 @@ public class Question {
 	private String text;
 	private List<Answer> answers;
 	private Answer bestAnswer;
+	private Date date;
 	
 	public Question(String title, String text, List<Tag> tags, User author){
 		this.title = title;
@@ -19,6 +21,7 @@ public class Question {
 		this.author = author;
 		this.text = text;
 		this.isOpen = true;
+		this.setDate(new Date());
 		
 	}
 	
@@ -85,6 +88,14 @@ public class Question {
 
 	public void setAnswers(List<Answer> answers) {
 		this.answers = answers;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 }

@@ -1,0 +1,229 @@
+package project.DataBase;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import project.domain.*;
+
+public class DataBaseImpl implements DataBase<Object>{
+	
+	private List<User> users = new ArrayList<User>();
+	private List<Question> questions = new ArrayList<Question>();
+
+	@Override
+	public void initData() {
+		// TODO Auto-generated method stub	
+	}
+
+	@Override
+	public Object find(Object data1, Object data2) {		
+		CominationType search = new DataBaseImpl().getCombination(data1, data2, null);
+		Object searchReturn = null;
+		
+		switch(search) {		
+			case USER_STRING:
+				Iterator<User> usersIter = users.iterator();
+				while(usersIter.hasNext()){
+					if (((User) data1).getEmail() == usersIter.next().getEmail()){
+						searchReturn = usersIter.next();			
+					}		
+				}
+				break;			
+			default:
+				break;		
+		}	
+		return searchReturn;
+	}
+
+	@Override
+	public void save(Object data1, Object data2, Object data3) {
+		CominationType search = new DataBaseImpl().getCombination(data1, data2, null);
+		Iterator<Question> questionsIter = questions.iterator();
+		
+		switch(search) {		
+			case USER_NULL:		
+				users.add((User) data1);
+				break;
+				
+			case QUESTION_NULL:	
+				questions.add((Question) data1);
+				break;
+				
+			case ANSWER_QUESTION:
+				while(questionsIter.hasNext()){
+					if((Question) data2 == questionsIter.next()){
+						List<Answer> answers;
+						answers = questionsIter.next().getAnswers();
+						answers.add((Answer)data1);
+						questionsIter.next().setAnswers(answers);
+					}
+				}
+				break;
+				
+			case COMMENT_QUESTION:	
+				while(questionsIter.hasNext()){
+					if((Question) data2 == questionsIter.next()){
+						List<Comment> comments;
+						comments = questionsIter.next().getComments();
+						comments.add((Comment)data1);
+						questionsIter.next().setComments(comments);
+					}
+				}
+				break;
+				
+			case COMMENT_ANSWER_QUESTION:					
+				while(questionsIter.hasNext()){
+					if((Question) data3 == questionsIter.next()){
+						Iterator<Answer> answers = questionsIter.next().getAnswers().iterator();
+						while(answers.hasNext()){
+							if ((Answer) data2 == answers.next()){
+								List<Comment> comments;
+								comments = answers.next().getComments();
+								comments.add((Comment) data1);
+								answers.next().setComments(comments);
+								List<Answer> answersReturn = questionsIter.next().getAnswers();
+								answersReturn.add(answers.next());
+								questionsIter.next().setAnswers(answersReturn);
+							}
+						}
+					}
+				}				
+				break;
+				
+			default:
+				break;		
+		}	
+	}
+
+	@Override
+	public CominationType getCombination(Object data1, Object data2, Object data3) {
+		
+		if ((data1 instanceof User) && (data2 == null) && (data3 == null)){
+			return CominationType.USER_NULL;
+		}
+		
+		else if ((data1 instanceof Answer) && (data2 instanceof Question) && (data3 == null)){
+			return CominationType.ANSWER_QUESTION;
+		}
+		
+		else if ((data1 instanceof Question) && (data2 == null) && (data3 == null)){
+			return CominationType.QUESTION_NULL;
+		}
+		
+		else if ((data1 instanceof Comment) && (data2 instanceof Answer) && (data3 instanceof Question)){
+			return CominationType.COMMENT_ANSWER_QUESTION;
+		}
+		
+		else if ((data1 instanceof Comment) && (data2 instanceof Question) && (data3 == null)){
+			return CominationType.COMMENT_QUESTION;
+		}
+		
+		else if ((data1 instanceof User) && (data2 instanceof String) && (data3 == null)){
+			return CominationType.USER_STRING;
+		}
+		
+		return CominationType.NOT_VALID_SEARCH;
+	}
+
+	@Override
+	public List<Object> search(Object data1) {
+		List<Object> searchReturn = new ArrayList<Object>();
+
+		Iterator<Question> questionsIter = questions.iterator();
+		while(questionsIter.hasNext()){
+			
+			if(data1 instanceof User){				
+				if (questionsIter.next().getAuthor() == data1){
+					searchReturn.add(questionsIter.next());
+				}
+			}		
+			else if(data1 instanceof Tag){
+				
+				for(int i = 0; i<5; i++){
+					if (questionsIter.next().getTags().get(i) == data1){
+						searchReturn.add(questionsIter.next());
+					}
+				}
+				
+			}	
+			else if(data1 instanceof String){
+				if (questionsIter.next().getTitle() == data1){
+					searchReturn.add(questionsIter.next());
+				}				
+			}
+			
+			else if(data1 instanceof Date){
+				if (questionsIter.next().getDate() == data1){
+					searchReturn.add(questionsIter.next());
+				}				
+			}	
+			
+			else if(data1 == null){			
+				searchReturn.addAll(questions);
+			}
+		}
+		return searchReturn;
+	}
+
+	@Override
+	public void remove(Object data1, Object data2, Object data3) {
+		CominationType search = new DataBaseImpl().getCombination(data1, data2, null);
+		Iterator<Question> questionsIter = questions.iterator();
+		
+		switch(search) {		
+			case USER_NULL:		
+				users.remove(data1);
+				break;
+				
+			case QUESTION_NULL:	
+				questions.remove(data1);
+				break;
+				
+			case ANSWER_QUESTION:
+				while(questionsIter.hasNext()){
+					if((Question) data2 == questionsIter.next()){
+						List<Answer> answers;
+						answers = questionsIter.next().getAnswers();
+						answers.remove((Answer)data1);
+						questionsIter.next().setAnswers(answers);
+					}
+				}
+				break;
+				
+			case COMMENT_QUESTION:	
+				while(questionsIter.hasNext()){
+					if((Question) data2 == questionsIter.next()){
+						List<Comment> comments;
+						comments = questionsIter.next().getComments();
+						comments.remove((Comment)data1);
+						questionsIter.next().setComments(comments);
+					}
+				}
+				break;
+				
+			case COMMENT_ANSWER_QUESTION:					
+				while(questionsIter.hasNext()){
+					if((Question) data3 == questionsIter.next()){
+						Iterator<Answer> answers = questionsIter.next().getAnswers().iterator();
+						while(answers.hasNext()){
+							if ((Answer) data2 == answers.next()){
+								List<Comment> comments;
+								comments = answers.next().getComments();
+								comments.remove((Comment) data1);
+								answers.next().setComments(comments);
+								List<Answer> answersReturn = questionsIter.next().getAnswers();
+								answersReturn.add(answers.next());
+								questionsIter.next().setAnswers(answersReturn);
+							}
+						}
+					}
+				}				
+				break;
+				
+			default:
+				break;	
+		}
+	}
+}
