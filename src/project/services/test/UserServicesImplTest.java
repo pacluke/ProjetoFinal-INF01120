@@ -7,7 +7,8 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import project.DataBase.dataBaseImpl;
+import project.DataBase.DataBaseImpl;
+import project.Permissions.Permissions;
 import project.domain.Credential;
 import project.domain.User;
 import project.services.UserServicesImpl;
@@ -18,7 +19,7 @@ public class UserServicesImplTest {
 	User userReg;
 	User userMod;
 	User userAdm;
-	dataBaseImpl database;
+	DataBaseImpl database;
 	UserServicesImpl userService;
 	
 	
@@ -30,35 +31,106 @@ public class UserServicesImplTest {
 		userMod = new User("Marisa", "marisa@bol.com", 002, "ewrwer", false, Credential.MODERATOR);
 		userAdm = new User("Joana", "joana@yahoo.com", 003, "qweiuqweyrrqwe", false, Credential.ADMIN);
 		
-		 database = new dataBaseImpl();
-		 userService = new UserServicesImpl(database, userAnon);
+		 database = new DataBaseImpl();
+		 Permissions check = new Permissions();
+		 userService = new UserServicesImpl(database, userAnon,check);
 	}
 	
 	
 	@Test
 	public void RegisterTest(){
 		
-		User userTest = userService.Register( "Joao", "joao@gmail.com",001, "qwerqwe");
-		
+		User userTest = userService.Register( "Joao", "joao@gmail.com",105, "qwerqwe");
 		assertTrue(userTest.getCredential() == Credential.REGISTERED_USER);
 		
+		User userTest2 = userService.Register( "Juliana", "juju@gmail.com",103, "asdzxc");
+		assertTrue(userTest2.getCredential() == Credential.REGISTERED_USER);
+		
 	}
+	
 	
 	@Test
 	public void LoginTest(){
-	
-		//do not exists:
-		User userTestNotExists = userService.Login("filomena@gmail.com", "hallellujah");
-		assertFalse(userTestNotExists.getCredential() != Credential.ANONYMOUS);
-		//exists
-		userService.Register("joao", "joao@gmail.com", 101, "qwerqwe");
-		User userTest = userService.Login("joao@gmail.com", "qwerqwe");
-		assertTrue(userTest.getCredential() != Credential.ANONYMOUS);
-		
-		
-				
+		userService.Register("cassandra", "cassandra@gmail.com", 101, "asdzx");
+		User userLog = userService.Login("cassandra@gmail.com", "asdzx");
+		assertTrue(userLog.getCredential() != Credential.ANONYMOUS);
 	}
 	
+	
+	@Test
+	public void logOutTest(){
+		assertTrue( userService.LogOut(userAdm).getCredential() == Credential.ANONYMOUS);
+		assertTrue( userService.LogOut(userAnon).getCredential() == Credential.ANONYMOUS );
+		assertTrue( userService.LogOut(userMod).getCredential() == Credential.ANONYMOUS );
+		assertTrue( userService.LogOut(userReg).getCredential() == Credential.ANONYMOUS );
+	}
+
+	@Test
+	public void BlockUserTest() throws Exception{
+		
+		userService.actualUser = userAdm;
+		
+		userService.BlockUser(userReg);
+		assertTrue(userReg.getIsBlocked() == true);
+		userService.BlockUser(userMod);
+		assertTrue(userMod.getIsBlocked() == true);
+		userService.BlockUser(userAdm);
+		assertTrue(userAdm.getIsBlocked() == false);
+	}
+	
+	@Test
+	public void removeModerationTest() throws Exception{
+		
+		userService.actualUser = userAdm;
+		
+		userService.removeModeration(userMod);
+		assertTrue(userMod.getCredential() == Credential.REGISTERED_USER);
+		userService.removeModeration(userAdm);
+		assertTrue(userAdm.getCredential() == Credential.REGISTERED_USER);
+	}
+	
+
+	@Test
+	public void removeAdminTest() throws Exception{
+	//just admin can removeAdmin
+		
+		userService.actualUser = userAdm;
+		
+		userService.removeAdmin(userAdm);
+		assertTrue(userAdm.getCredential() == Credential.REGISTERED_USER);	
+	}
+	
+	
+	@Test
+	public void concedeModerationTest() throws Exception{
+		
+		userService.actualUser = userAdm;
+		
+		userService.concedeModeration(userReg);
+		assertTrue(userReg.getCredential() == Credential.MODERATOR);
+		userService.concedeModeration(userAnon);
+		assertFalse(userAnon.getCredential() == Credential.MODERATOR);
+		userService.concedeModeration(userMod);
+		assertTrue(userMod.getCredential() == Credential.MODERATOR);
+		userService.concedeModeration(userAdm);
+		assertTrue(userAdm.getCredential() == Credential.MODERATOR);
+	}
+	
+	@Test
+	public void concedeAdmin() throws Exception{
+		
+		userService.actualUser = userAdm;
+		
+		
+		userService.concedeAdmin(userMod);
+		assertTrue(userMod.getCredential() == Credential.ADMIN);
+		userService.concedeAdmin(userAdm);
+		assertTrue(userAdm.getCredential() == Credential.ADMIN);
+		userService.concedeAdmin(userReg);
+		assertTrue(userReg.getCredential() == Credential.ADMIN);
+		userService.concedeAdmin(userAnon);
+		assertFalse(userAnon.getCredential() == Credential.ADMIN);
+	}
 	
 	
 	@Test
@@ -68,149 +140,6 @@ public class UserServicesImplTest {
 		assertTrue(userService.isLoggedIn(userAdm));
 		assertTrue(userService.isLoggedIn(userMod));
 		assertTrue(userService.isLoggedIn(userReg));
-	}
-	
-	
-	@Test
-	public void logOutTest(){
-		
-		assertTrue( userService.LogOut(userAdm).getCredential() == Credential.ANONYMOUS);
-		assertTrue( userService.LogOut(userAnon).getCredential() == Credential.ANONYMOUS );
-		assertFalse( userService.LogOut(userAnon).getCredential() == Credential.ADMIN );
-		assertFalse( userService.LogOut(userAnon).getCredential() == Credential.MODERATOR );
-		assertFalse( userService.LogOut(userAnon).getCredential() == Credential.REGISTERED_USER );
-		
-	}
-	
-	@Test
-	public void  checkPermissionTest(){
-		
-		assertFalse(userService.checkPermission(userAnon, Credential.ADMIN));
-		assertFalse(userService.checkPermission(userAnon, Credential.MODERATOR));
-		assertFalse(userService.checkPermission(userAnon, Credential.REGISTERED_USER));
-		assertTrue(userService.checkPermission(userAnon, Credential.ANONYMOUS));
-		
-		assertFalse(userService.checkPermission(userReg, Credential.ADMIN));
-		assertFalse(userService.checkPermission(userReg, Credential.MODERATOR));
-		assertTrue(userService.checkPermission(userReg, Credential.REGISTERED_USER));
-		assertTrue(userService.checkPermission(userReg, Credential.ANONYMOUS));
-		
-		assertFalse(userService.checkPermission(userMod, Credential.ADMIN));
-		assertTrue(userService.checkPermission(userMod, Credential.MODERATOR));
-		assertTrue(userService.checkPermission(userMod, Credential.REGISTERED_USER));
-		assertTrue(userService.checkPermission(userMod, Credential.ANONYMOUS));
-		
-		assertTrue(userService.checkPermission(userAdm, Credential.ADMIN));
-		assertTrue(userService.checkPermission(userAdm, Credential.MODERATOR));
-		assertTrue(userService.checkPermission(userAdm, Credential.REGISTERED_USER));
-		assertTrue(userService.checkPermission(userAdm, Credential.ANONYMOUS));
-		
-		
-		
-	}
-
-	@Test
-	public void BlockUserTest(){
-		
-		userService.actualUser = userAdm;
-		
-		assertTrue(userService.BlockUser(userReg));
-		assertTrue(userService.BlockUser(userMod));
-		assertFalse(userService.BlockUser(userAnon));
-		assertFalse(userService.BlockUser(userAdm));
-		
-		
-		userService.actualUser = userReg;
-		
-		assertFalse(userService.BlockUser(userReg));
-		assertFalse(userService.BlockUser(userMod));
-		assertFalse(userService.BlockUser(userAnon));
-		assertFalse(userService.BlockUser(userAdm));
-	}
-	
-	
-	
-	@Test
-	public void removeModerationTest(){
-		
-		userService.actualUser = userAdm;
-		assertFalse(userService.removeModeration(userReg));
-		assertTrue(userService.removeModeration(userMod));
-		assertFalse(userService.removeModeration(userAnon));
-		assertTrue(userService.removeModeration(userAdm));
-		
-		
-		userService.actualUser = userReg;
-		assertFalse(userService.removeModeration(userReg));
-		assertFalse(userService.removeModeration(userMod));
-		assertFalse(userService.removeModeration(userAnon));
-		assertFalse(userService.removeModeration(userAdm));
-	}
-	
-	
-
-	@Test
-	public void removeAdminTest(){
-	//just admin can removeAdmin
-		
-		userService.actualUser = userAdm;
-		assertFalse(userService.removeAdmin(userReg));
-		assertFalse(userService.removeAdmin(userMod));
-		assertFalse(userService.removeAdmin(userAnon));
-		assertTrue(userService.removeAdmin(userAdm));
-		
-		userService.actualUser = userMod;
-		assertFalse(userService.removeAdmin(userReg));
-		assertFalse(userService.removeAdmin(userMod));
-		assertFalse(userService.removeAdmin(userAnon));
-		assertFalse(userService.removeAdmin(userAdm));
-		
-		userService.actualUser = userReg;
-		assertFalse(userService.removeAdmin(userReg));
-		assertFalse(userService.removeAdmin(userMod));
-		assertFalse(userService.removeAdmin(userAnon));
-		assertFalse(userService.removeAdmin(userAdm));
-	}
-	
-	
-	@Test
-	public void concedeModerationTest(){
-
-		//just admin can removeAdmin
-		userService.actualUser = userAdm;
-		assertTrue(userService.concedeModeration(userReg));
-		assertTrue(userService.concedeModeration(userMod));
-		assertTrue(userService.concedeModeration(userAdm));
-		assertFalse(userService.concedeModeration(userAnon));
-		
-		
-		userService.actualUser = userMod;
-		assertFalse(userService.concedeModeration(userReg));
-		assertFalse(userService.concedeModeration(userMod));
-		assertFalse(userService.concedeModeration(userAdm));
-		assertFalse(userService.concedeModeration(userAnon));
-		
-	}
-	
-	@Test
-	public void concedeAdmin(){
-		
-
-		//just admin can removeAdmin
-		userService.actualUser = userReg;
-		assertFalse(userService.concedeAdmin(userReg));
-		assertFalse(userService.concedeAdmin(userMod));
-		assertFalse(userService.concedeAdmin(userAdm));
-		assertFalse(userService.concedeAdmin(userAnon));
-		
-		userService.actualUser = userAdm;
-		assertTrue(userService.concedeAdmin(userReg));
-		assertTrue(userService.concedeAdmin(userMod));
-		assertTrue(userService.concedeAdmin(userAdm));
-		assertFalse(userService.concedeAdmin(userAnon));
-		
-		
-
 	}
 	
 }

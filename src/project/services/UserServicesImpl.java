@@ -72,7 +72,7 @@ public class UserServicesImpl implements UserServices {
 		boolean userIsNotAnonymous = (user.getCredential() != Credential.ANONYMOUS);
 		
 		check.Permission(this.actualUser, Credential.MODERATOR);
-		
+		System.out.println("churros");
 		if(userIsNotAdmin && userIsNotAnonymous){															
 			user.setIsBlocked(true);
 		}
@@ -101,7 +101,7 @@ public class UserServicesImpl implements UserServices {
 		check.Permission(this.actualUser, Credential.ADMIN);
 		
 		if(userIsAdmin){															
-			user.setCredential(Credential.MODERATOR);
+			user.setCredential(Credential.REGISTERED_USER);
 		}
 	}
 

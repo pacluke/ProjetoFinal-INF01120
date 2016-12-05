@@ -96,7 +96,7 @@ public class ContentServicesImpl implements ContentServices {
 
 	@Override
 	public void removeComment(User user, Comment comment, Question question, Answer answer) throws Exception{			//LISI
-		check.Permission(user, Credential.MODERATOR);
+		check.Permission(user, Credential.REGISTERED_USER);
 		
 		if(user == comment.getAuthor()){															
 			if (answer == null){
@@ -107,6 +107,18 @@ public class ContentServicesImpl implements ContentServices {
 				database.remove(comment, answer, question);
 			}
 		}
+		
+		else {
+			check.Permission(user, Credential.MODERATOR);
+			if (answer == null){
+				database.remove(comment, question, null);
+			}
+			
+			else {
+				database.remove(comment, answer, question);
+			}
+		}
+		
 	}
 
 	@Override

@@ -24,11 +24,12 @@ public class DataBaseImpl implements DataBase<Object>{
 		
 		switch(search) {		
 			case USER_STRING:
-				Iterator<User> usersIter = users.iterator();
-				while(usersIter.hasNext()){
-					if (((User) data1).getEmail() == usersIter.next().getEmail()){
-						searchReturn = usersIter.next();			
-					}		
+				for (Iterator<User> it = users.iterator(); it.hasNext(); ) {
+
+				    User user = it.next();
+				    if (user.getEmail().equals(data2)) {
+				       searchReturn = user;
+				    }
 				}
 				break;			
 			default:
@@ -42,6 +43,7 @@ public class DataBaseImpl implements DataBase<Object>{
 		CominationType search = new DataBaseImpl().getCombination(data1, data2, null);
 		Iterator<Question> questionsIter = questions.iterator();
 		
+		
 		switch(search) {		
 			case USER_NULL:		
 				users.add((User) data1);
@@ -49,6 +51,7 @@ public class DataBaseImpl implements DataBase<Object>{
 				
 			case QUESTION_NULL:	
 				questions.add((Question) data1);
+				System.out.println("churros");
 				break;
 				
 			case ANSWER_QUESTION:
@@ -130,38 +133,43 @@ public class DataBaseImpl implements DataBase<Object>{
 	@Override
 	public List<Object> search(Object data1) {
 		List<Object> searchReturn = new ArrayList<Object>();
+		
+		if(data1 == null){			
+			searchReturn.addAll(questions);
+		}
+		
+		else {
 
-		Iterator<Question> questionsIter = questions.iterator();
-		while(questionsIter.hasNext()){
+		
+		for(int i = 0; i<questions.size(); i++){
 			
 			if(data1 instanceof User){				
-				if (questionsIter.next().getAuthor() == data1){
-					searchReturn.add(questionsIter.next());
+				if (questions.get(i).getAuthor() == data1){
+					searchReturn.add(questions.get(i));
 				}
-			}		
-			else if(data1 instanceof Tag){
-				
-				for(int i = 0; i<5; i++){
-					if (questionsIter.next().getTags().get(i) == data1){
-						searchReturn.add(questionsIter.next());
+			}
+			
+			else if(data1 instanceof Tag){	
+				for(int j = 0; j<5; j++){
+					boolean feedback = false;
+					if (questions.get(i).getTags().get(j) == data1){
+						feedback = true;
 					}
+					if(feedback) searchReturn.add(questions.get(i));
 				}
 				
 			}	
 			else if(data1 instanceof String){
-				if (questionsIter.next().getTitle() == data1){
-					searchReturn.add(questionsIter.next());
+				if (questions.get(i).getTitle() == data1){
+					searchReturn.add(questions.get(i));
 				}				
 			}
 			
 			else if(data1 instanceof Date){
-				if (questionsIter.next().getDate() == data1){
-					searchReturn.add(questionsIter.next());
-				}				
-			}	
-			
-			else if(data1 == null){			
-				searchReturn.addAll(questions);
+				if (questions.get(i).getDate() == data1){
+					searchReturn.add(questions.get(i));
+					}				
+				}	
 			}
 		}
 		return searchReturn;
@@ -170,8 +178,6 @@ public class DataBaseImpl implements DataBase<Object>{
 	@Override
 	public void remove(Object data1, Object data2, Object data3) {
 		CominationType search = new DataBaseImpl().getCombination(data1, data2, null);
-		Iterator<Question> questionsIter = questions.iterator();
-		
 		switch(search) {		
 			case USER_NULL:		
 				users.remove(data1);
@@ -182,43 +188,54 @@ public class DataBaseImpl implements DataBase<Object>{
 				break;
 				
 			case ANSWER_QUESTION:
-				while(questionsIter.hasNext()){
-					if((Question) data2 == questionsIter.next()){
-						List<Answer> answers;
-						answers = questionsIter.next().getAnswers();
-						answers.remove((Answer)data1);
-						questionsIter.next().setAnswers(answers);
-					}
+				for (Iterator<Question> it = questions.iterator(); it.hasNext(); ) {
+				    Question question = it.next();
+				    if (question == data2) {
+				       List<Answer> answers = question.getAnswers();
+						for (Iterator<Answer> ita = answers.iterator(); ita.hasNext(); ) {
+						    Answer answer = ita.next();
+						    if (answer == data1) {
+						       ita.remove();
+						    }
+						}
+				    }
 				}
 				break;
 				
 			case COMMENT_QUESTION:	
-				while(questionsIter.hasNext()){
-					if((Question) data2 == questionsIter.next()){
-						List<Comment> comments;
-						comments = questionsIter.next().getComments();
-						comments.remove((Comment)data1);
-						questionsIter.next().setComments(comments);
-					}
+				for (Iterator<Question> it = questions.iterator(); it.hasNext(); ) {
+				    Question question = it.next();
+				    if (question == data2) {
+				       List<Comment> comments = question.getComments();
+						for (Iterator<Comment> itc = comments.iterator(); itc.hasNext(); ) {
+						    Comment comment = itc.next();
+						    if (comment == data1) {
+						       itc.remove();
+						    }
+						}
+				    }
 				}
 				break;
 				
 			case COMMENT_ANSWER_QUESTION:					
-				while(questionsIter.hasNext()){
-					if((Question) data3 == questionsIter.next()){
-						Iterator<Answer> answers = questionsIter.next().getAnswers().iterator();
-						while(answers.hasNext()){
-							if ((Answer) data2 == answers.next()){
-								List<Comment> comments;
-								comments = answers.next().getComments();
-								comments.remove((Comment) data1);
-								answers.next().setComments(comments);
-								List<Answer> answersReturn = questionsIter.next().getAnswers();
-								answersReturn.add(answers.next());
-								questionsIter.next().setAnswers(answersReturn);
-							}
+				for (Iterator<Question> it = questions.iterator(); it.hasNext(); ) {
+				    Question question = it.next();
+				    if (question == data3) {
+				       List<Answer> answers = question.getAnswers();
+						for (Iterator<Answer> ita = answers.iterator(); ita.hasNext(); ) {
+						    Answer answer = ita.next();
+						    if (answer == data2) {
+							       List<Comment> comments = answer.getComments();
+									for (Iterator<Comment> itc = comments.iterator(); itc.hasNext(); ) {
+									    Comment comment = itc.next();
+									    if (comment == data1) {
+									       itc.remove();
+									    }
+									}
+						       
+						    }
 						}
-					}
+				    }
 				}				
 				break;
 				
