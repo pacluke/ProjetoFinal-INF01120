@@ -16,14 +16,31 @@ import project.domain.*;
 import project.services.*;
 
 public class ContentServicesTest {
-
 	
+	User userAnon = new User();
+	User userReg = new User("Arthur", "arthurL@gmail.com", 007, "jesus9", false, Credential.REGISTERED_USER);
+	User userReg2 = new User("Tais", "tais@gmail.com", 007, "jesus9", false, Credential.REGISTERED_USER);
+	User userMod = new User("Kath", "Kath@bol.com", 006, "helloe56", false, Credential.MODERATOR);
+	User userAdm = new User("Joana", "joana@yahoo.com", 003, "qweiuqweyrrqwe", false, Credential.ADMIN);	
+
 	User[] user = new User[5];
 	
 	//check.Permission(user, Credential.REGISTERED_USER);
 		
 	DataBaseImpl database = new DataBaseImpl();;
 	Permissions check = new Permissions();;
+	
+	
+	ContentServicesImpl csAnon = new ContentServicesImpl(database, userAnon, check);
+	
+	ContentServicesImpl csUser = new ContentServicesImpl(database, userReg,  check);
+	ContentServicesImpl csUser2 = new ContentServicesImpl(database, userReg2, check);
+	ContentServicesImpl csMod = new ContentServicesImpl(database, userMod, check);
+	ContentServicesImpl csAdm = new ContentServicesImpl(database, userAdm, check);
+	
+	
+	
+	//check.Permission(user, Credential.REGISTERED_USER);
 	
 	
 	ContentServicesImpl[] cs = new ContentServicesImpl[5];
@@ -64,9 +81,16 @@ public class ContentServicesTest {
 		cs[4] = new ContentServicesImpl(database, user[4], check);
 		
 		
+		Tag tag1 = new Tag("Computador");
+		Tag tag2 = new Tag("Java");
+		Tag tag3 = new Tag("TCP");
+		Tag tag4 = new Tag("Complexidade");
+		Tag tag5 = new Tag("OrgB");
+			
+		List<Tag> listaTag = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
+		
 	}
 
-	
 	@Test
 	public void addQuestionTest() throws Exception{
 		
@@ -79,7 +103,7 @@ public class ContentServicesTest {
 		title[3] = "Minha Pergunta4";
 		String text = "Ola, eu posso fazer pergunta?";
 		
-		q[0] = new Question(title[0], text, listaTag, user[0]);
+		q[0] = new Question(title[0], text, listaTag, user[0]);		// question can't be added since it's an anonymous user
 		q[1] = new Question(title[1], text, listaTag, user[1]);
 		q[2] = new Question(title[2], text, listaTag, user[2]);
 		q[3] = new Question(title[3], text, listaTag, user[3]);
@@ -89,6 +113,7 @@ public class ContentServicesTest {
 		feedback[1] = false;
 		feedback[2] = false;
 		feedback[3] = false;
+		
 		
 		for (int j = 1; j<4; j++)
 		{
@@ -105,16 +130,14 @@ public class ContentServicesTest {
 		}
 	}
 
-	
-	
-	
 	@Test
 	public void  answerQuestionTest() throws Exception{
 		
-		cs[1].addQuestion("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", user[1], listaTag);
 		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, user[1]);
 		
-		cs[0].answerQuestion(q1, "Ola, sou usuario anonimo, posso responder perguntas?", user[0]);	//permission denied
+		database.save(q1,  null, null);
+		
+		//cs[0].answerQuestion(q1, "Ola, sou usuario anonimo, posso responder perguntas?", user[0]);	//permission denied
 		cs[1].answerQuestion(q1, "Ola, sou usuario registrado, posso responder perguntas?", user[1]);
 		cs[2].answerQuestion(q1, "Ola, sou moderador, posso responder perguntas?", user[2]);
 		cs[3].answerQuestion(q1, "Ola, sou admin, posso responder perguntas?", user[3]);
@@ -127,24 +150,32 @@ public class ContentServicesTest {
 		a[3] = new Answer (user[3], "Ola, sou admin, posso responder perguntas?");
 		
 		List<Answer> answers = new ArrayList<Answer>();
-	
-		
-		
-		//answers = cs[1].viewAnswers(q1);		
-		//System.out.println(answers.get(0).getText());
-		
-		//AS OF YET THERE'S NO METHOD FOR SEARCHING FOR ANSWERS AND I WANNA KILL MYSELF RN :)))))
-		
-		//CHEATING:
-		for(int i = 1; i<4; i++)
-			answers.add(a[i]);
-		
-		q1.setAnswers(answers);
-		
-		for (int i = 1; i<4; i++)
-		{
-			answers = cs[i].viewAnswers(q1);
-			assertTrue(answers.get(i-1) == a[i]);
+		boolean[] feedback = new boolean[4];
+		feedback[1] = false;
+		feedback[2] = false;
+		feedback[3] = false;
+
+		List<Object> questions = database.search(null);
+			
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
+				answers = cs[1].viewAnswers((Question)questions.get(i));				
+				
+				
+				for (int k = 1; k<4; k++){	
+					for(int j = 0; j < answers.size(); j++){
+						if (a[k].getText()==((Answer)answers.get(j)).getText())
+						{
+							feedback[k] = true;
+						}
+					}
+					assertTrue(feedback[k]);
+					
+				}
+				
+				
+				
+			}
 		}
 		
 	}
@@ -154,153 +185,337 @@ public class ContentServicesTest {
 		
 		
 		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, user[1]);
-		Answer a1 = new Answer (user[0], "Ola, sou usuario anonimo, posso responder perguntas?");
+		database.save(q1,  null, null);
 		
+		Question q2 = new Question("Minha Pergunta2", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q2,  null, null);
+		
+		Answer a1 = new Answer (user[1], "Ola, sou usuario registrado, posso responder perguntas?");
+		database.save(a1, q2, null);
+		
+			
 		//cs[0].answerQuestion(q1, "Ola, sou usuario anonimo, posso responder perguntas?", user[0]);
-		cs[1].addComment("Ola, sou usuario registrado, posso responder perguntas?", user[1], q1, a1);
-		//cs[2].answerQuestion(q1, "Ola, sou moderador, posso responder perguntas?", user[2]);
-		//cs[3].answerQuestion(q1, "Ola, sou admin, posso responder perguntas?", user[3]);
+		cs[1].addComment("Ola, sou usuario registrado, posso comentar em perguntas?", user[1], q1, null);
+		cs[2].addComment("Ola, sou moderador, posso comentar em perguntas?", user[2], q1, null);
+		cs[3].addComment("Ola, sou admin, posso comentar em perguntas?", user[3], q1, null);
 		
-		Comment[] c = new Comment[4];
+		cs[1].addComment("Ola, sou usuario registrado, posso comentar em repostas tambem?", user[1], q2, a1);
+		cs[2].addComment("Ola, sou moderador, posso comentar em repostas tambem", user[2], q2, a1);
+		cs[3].addComment("Ola, sou admin, posso comentar em repostas tambem", user[3], q2, a1);
 		
-		c[0] = new Comment("Ola, sou usuario registrado, posso responder perguntas?", user[0]);
-		c[1] = new Comment("Ola, sou usuario anonimo, posso responder perguntas?", user[1]);			
-		c[2] = new Comment("Ola, sou moderador, posso responder perguntas?", user[2]);		
-		c[3] = new Comment("Ola, sou admin, posso responder perguntas?", user[3]);
+		Comment[] c = new Comment[8];
+		
+		//c[0] = new Comment("Ola, sou usuario registrado, posso responder perguntas?", user[0]);
+		c[1] = new Comment("Ola, sou usuario registrado, posso comentar em perguntas?", user[1]);			
+		c[2] = new Comment("Ola, sou moderador, posso comentar em perguntas?", user[2]);		
+		c[3] = new Comment("Ola, sou admin, posso comentar em perguntas?", user[3]);
+		
+		c[5] = new Comment("Ola, sou usuario registrado, posso comentar em repostas tambem?", user[1]);			
+		c[6] = new Comment("Ola, sou moderador, posso comentar em repostas tambem", user[2]);		
+		c[7] = new Comment("Ola, sou admin, posso comentar em repostas tambem", user[3]);
 		
 		List<Comment> comments = new ArrayList<Comment>();
-		//List<Comment> comments = cs[1].viewComments(q1, a1);
+		List<Comment> commentsAnswers = new ArrayList<Comment>();
 		
-		//System.out.println(comments.get(0).getText());
+		List<Answer> answers = new ArrayList<Answer>();
+		boolean[] feedback = new boolean[8];
+		feedback[1] = false;
+		feedback[2] = false;
+		feedback[3] = false;
+		feedback[4] = false;
+		feedback[5] = false;
+		feedback[6] = false;
+		feedback[7] = false;
 		
-		// NO METHOD FOR SEARCHING FOR COMMENTS EITHER
-		//CHEATING:
+
+		List<Object> questions = database.search(null);
 		
-		for(int i = 1; i<4; i++)
-			comments.add(c[i]);
-		
-		a1.setComments(comments);
-		
-		for (int i = 1; i<4; i++)
-		{
-			comments = cs[i].viewComments(q1, a1);
-			assertTrue(comments.get(i-1) == c[i]);
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
+				comments = cs[1].viewComments((Question)questions.get(i), null);	
+				
+				for (int k = 1; k<4; k++){	
+					for(int j = 0; j < comments.size(); j++){
+						if (c[k].getText()==((Comment)comments.get(j)).getText())
+						{
+							feedback[k] = true;
+						}
+					}
+					assertTrue(feedback[k]);
+					
+				}
+			}
+		}
+				
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q2.getTitle()) && (((Question)questions.get(i)).getText() == q2.getText()) && (((Question)questions.get(i)).getDate().getDate() == q2.getDate().getDate())){
+				commentsAnswers = cs[1].viewComments((Question)questions.get(i), a1);
+				
+				for (int k = 5; k<8; k++){	
+					for(int j = 0; j < commentsAnswers.size(); j++){
+						if (c[k].getText()==((Comment)commentsAnswers.get(j)).getText())
+						{
+							feedback[k] = true;
+						}
+					}
+					assertTrue(feedback[k]);
+					
+				}
+				
+				
+				
+			}
 		}
 		
 		
 	} 
-/*	
+
+
+	
+	
 	@Test
-	public void  selectBestAnswerTest(){
+	public void  selectBestAnswerTest() throws Exception{
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
 		
-		Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me ajuda???", listaTag, userReg);
-		Answer a1 = new Answer(userReg2, "Eu tenho a solucao de todos os seus problemas!!!!");
-		assertFalse(csAnon.selectBestAnswer(q1, userAnon, a1));
-		assertFalse(csUser2.selectBestAnswer(q1, userReg2, a1));	//should be false because userReg2 didn't create the question
-		assertTrue(csUser.selectBestAnswer(q1, userReg, a1));
-		assertTrue(csMod.selectBestAnswer(q1, userMod, a1));
-		assertTrue(csAdm.selectBestAnswer(q1, userAdm, a1));
+		Question q2 = new Question("Minha Pergunta2", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+		
+		Question q3 = new Question("Minha Pergunta3", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+		
+		Answer a1 = new Answer (user[1], "Ola, sou usuario registrado, posso responder perguntas?");
+		database.save(a1, q1, null);
+		database.save(a1, q2, null);
+		database.save(a1, q3, null);
+		
+		cs[1].selectBestAnswer(q1, user[1], a1);	//same user selecting best answer
+		cs[2].selectBestAnswer(q2, user[2], a1);	//mod selecting best answer
+		cs[3].selectBestAnswer(q3, user[3], a1);	//adm selecting best answer
+		
+		List<Object> questions = database.search(null);
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
+				
+				assertTrue(a1.getText() == (((Question)questions.get(i)).getBestAnswer().getText()));
+		
+			}
+		}
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q2.getTitle()) && (((Question)questions.get(i)).getText() == q2.getText()) && (((Question)questions.get(i)).getDate().getDate() == q2.getDate().getDate())){
+				
+				assertTrue(a1.getText() == (((Question)questions.get(i)).getBestAnswer().getText()));
+		
+			}
+		}
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q3.getTitle()) && (((Question)questions.get(i)).getText() == q3.getText()) && (((Question)questions.get(i)).getDate().getDate() == q3.getDate().getDate())){
+				
+				assertTrue(a1.getText() == (((Question)questions.get(i)).getBestAnswer().getText()));
+		
+			}
+		}
+	}
+	
+	
+	@Test
+	public void  closeQuestionTest() throws Exception{
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+		
+		Question q2 = new Question("Minha Pergunta2", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+
+											//only mods and adms can close questions
+		cs[2].closeQuestion(user[2], q1);	//mod selecting best answer
+		cs[3].closeQuestion(user[3], q2);	//adm selecting best answer
+		
+		List<Object> questions = database.search(null);
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
+				
+				assertFalse(((Question)questions.get(i)).getIsOpen());
+		
+			}
+		}
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q2.getTitle()) && (((Question)questions.get(i)).getText() == q2.getText()) && (((Question)questions.get(i)).getDate().getDate() == q2.getDate().getDate())){
+				
+				assertFalse(((Question)questions.get(i)).getIsOpen());
+		
+			}
+		}
+		
+		
 		
 	}
 	
 	@Test
-	public void  closeQuestionTest(){
+	public void editQuestionTest() throws Exception{
 		
-		Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me ajuda???", listaTag, userReg);
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
 		
-		assertFalse(csAnon.closeQuestion(userAnon, q1));
-		assertFalse(csUser.closeQuestion(userReg, q1));	//only moderators and admins can close a question
-		assertTrue(csMod.closeQuestion(userMod, q1));	
-		assertTrue(csAdm.closeQuestion(userAdm, q1));
+		Question q2 = new Question("Minha Pergunta2", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+		
+		Question q3 = new Question("Minha Pergunta3", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
+		database.save(q1,  null, null);
+		
+		database.save(q1, null, null);
+		database.save(q2, null, null);
+		database.save(q3, null, null);
+		
+		cs[1].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA", q1);
+		cs[2].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA2222", q2);
+		cs[3].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA3333", q3);
+		
+		
+		List<Object> questions = database.search(null);
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
+				
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA" == (((Question)questions.get(i)).getText()));
+		
+			}
+		}
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q2.getTitle()) && (((Question)questions.get(i)).getText() == q2.getText()) && (((Question)questions.get(i)).getDate().getDate() == q2.getDate().getDate())){
+				
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA2222" == (((Question)questions.get(i)).getText()));
+		
+			}
+		}
+		
+		for(int i = 0; i < questions.size(); i++){
+			if((((Question)questions.get(i)).getTitle() == q3.getTitle()) && (((Question)questions.get(i)).getText() == q3.getText()) && (((Question)questions.get(i)).getDate().getDate() == q3.getDate().getDate())){
+				
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA3333" == (((Question)questions.get(i)).getText()));
+		
+			}
+		}
+		
+		
+		
 	}
 	
 	@Test
-	public void  editQuestionTest(){
+	
+	public void removeCommentTest() throws Exception {		
 		
-Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me ajuda???", listaTag, userReg);
+		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userReg);
+		Answer a1 = new Answer( userReg, "Parece que sim!");
 		
-		assertFalse(csAnon.editQuestion(userAnon, "Pensando bem, eu queria era saber que dia eh hoje!", q1));
-		assertFalse(csUser2.editQuestion(userReg2, "Pensando bem, eu queria era saber que dia eh hoje!", q1));	//should be false because userReg2 didn't create the question
-		assertTrue(csUser.editQuestion(userReg, "Pensando bem, eu queria era saber que dia eh hoje!", q1));
-		assertTrue(csMod.editQuestion(userMod, "Pensando bem, eu queria era saber que dia eh hoje!", q1));	
-		assertTrue(csAdm.editQuestion(userAdm, "Pensando bem, eu queria era saber que dia eh hoje!", q1));
+		Comment c1 = new Comment("Nao entendi sua pergunta.", userReg);
+		Comment c2 = new Comment("Voce devia ser mais especifico.", userReg);
 		
+		Comment c3 = new Comment("Isso é um comentario!", userAdm);
+		Comment c4 = new Comment("Isso tambem é um comentário!", userMod);
+		Comment c5 = new Comment("Outro comentario genial de um usuario", userReg);
+		
+		
+		List<Comment> comments = new ArrayList<Comment>();
+		comments.add(c1);
+		comments.add(c2);
+		comments.add(c3);
+		comments.add(c4);
+		comments.add(c5);
+		q1.setComments(comments);
+		a1.setComments(comments);
+		
+		database.save(q1, null, null);
+		database.save(a1, null, null);
+		
+		assertTrue(q1.getComments().size() == 5);
+		
+		csUser.removeComment(userReg, c1, q1, null);
+		csUser.removeComment(userReg, c2, q1, null);
+		csUser.removeComment(userAdm, c3, q1, null);
+		csUser.removeComment(userMod, c4, q1, null);
+		csUser.removeComment(userReg, c5, q1, null);
+		
+		assertTrue(q1.getComments().size() == 0);
 	}
 	
 	@Test
-	public void  checkPermissionTest(){
-		
-		assertFalse(csAnon.checkPermission(userAnon, Credential.ADMIN));
-		assertFalse(csAnon.checkPermission(userAnon, Credential.MODERATOR));
-		assertFalse(csAnon.checkPermission(userAnon, Credential.REGISTERED_USER));
-		assertTrue(csAnon.checkPermission(userAnon, Credential.ANONYMOUS));
-		
-		assertFalse(csUser.checkPermission(userReg, Credential.ADMIN));
-		assertFalse(csUser.checkPermission(userReg, Credential.MODERATOR));
-		assertTrue(csUser.checkPermission(userReg, Credential.REGISTERED_USER));
-		assertTrue(csUser.checkPermission(userReg, Credential.ANONYMOUS));
-		
-		assertFalse(csMod.checkPermission(userMod, Credential.ADMIN));
-		assertTrue(csMod.checkPermission(userMod, Credential.MODERATOR));
-		assertTrue(csMod.checkPermission(userMod, Credential.REGISTERED_USER));
-		assertTrue(csMod.checkPermission(userMod, Credential.ANONYMOUS));
-		
-		assertTrue(csAdm.checkPermission(userAdm, Credential.ADMIN));
-		assertTrue(csAdm.checkPermission(userAdm, Credential.MODERATOR));
-		assertTrue(csAdm.checkPermission(userAdm, Credential.REGISTERED_USER));
-		assertTrue(csAdm.checkPermission(userAdm, Credential.ANONYMOUS));
-		
-		
-		
-	}
-	
-//TESTES DA LISI
-	
-//	@Test
-//	public void removeCommentTest() {		
-//		
-//		Comment c1 = new Comment("NÃ£o entendi sua pergunta.", userReg);
-//		Comment c2 = new Comment("VocÃª devia ser mais especÃ­fico.", userAnon);
-//		
-//	
-//		assertTrue(csUser.removeComment(userReg, c1));
-//		assertTrue(csAdm.removeComment(userAdm, c2));
-//		assertFalse(csAnon.removeComment(userAnon, c2));
-//		assertTrue(csMod.removeComment(userMod, c1));
-//		
-//		
-//	}
-	@Test
-    public void removeQuestionTest() {			//LISI
+    public void removeQuestionTest() throws Exception {			//LISI
 			
+
     	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userReg);
     	Question q2 = new Question("Minha Pergunta", "Ola, sou usuario registrado, excluir uma pergunta?", listaTag, userReg);
     	Question q3 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTag, userMod);
+    	Question q4 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer comentario??", listaTag, userReg);
 		
-		assertTrue(csUser.removeQuestion(userReg, q1));
-		assertFalse(csUser.removeQuestion(userReg, q3));
-		assertFalse(csAnon.removeQuestion(userAnon, q2));
-		assertTrue(csMod.removeQuestion(userMod, q2));
+    	database.save(q1, null, null);
+    	database.save(q2, null, null);
+    	database.save(q3, null, null);
+    	database.save(q4, null, null);
 		
+		boolean passou = true;
+		
+		csMod.removeQuestion(userReg, q1);
+		
+		
+		List<Object> questions = database.search(null);
+		Iterator<Object> questionsIter = (Iterator<Object>) questions.iterator();
+
+		while(questionsIter.hasNext()){
+			if(questionsIter.next() == q1)
+				passou = false;
+		}
+
+		assertTrue(passou);
+		
+		csMod.removeQuestion(userMod, q3);
+		passou = true;
+		while(questionsIter.hasNext()){
+			if(questionsIter.next() == q3)
+				passou = false;
+		}
+
+		assertTrue(passou);
+		
+		
+		csAdm.removeQuestion(userReg, q4);
+		passou = true;
+		while(questionsIter.hasNext()){
+			if(questionsIter.next() == q4)
+				passou = false;
+		}
+
+		assertTrue(passou);
 		
 	}
-//	@Test
-//    public void searchQuestionTest () {
-//			
-//    	Tag tag1 = new Tag("Perguntas");
-//    	
-//    	List<Tag> listaTagAux = new ArrayList<>();
-//    	listaTagAux.add(tag1);
-//    	
-//    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTagAux, userMod);
-//    	Question q2 = new Question("Minha Pergunta", "Qual o dia das aulas de OrgB?", listaTag, userMod);
-//    	
-//    	List<Question> questions = csMod.searchQuestion("excluir perguntas", "Perguntas");
-//    	
-//    	assertTrue(questions.contains(q1));
-//    	assertFalse(questions.contains(q2));
-//		
-//	}
+
+	@Test
+    public void searchQuestionTest() throws Exception {
+			
+    	Tag tag = new Tag("Perguntas");
+    	
+    	List<Tag> listaTagAux = new ArrayList<>();
+    	listaTagAux.add(tag);
+    	
+    	
+    	Question q1 = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir perguntas?", listaTagAux, userMod);
+    	Question q2 = new Question("Minha Pergunta", "Qual o dia das aulas de OrgB?", listaTag, userMod);
+    	
+    	database.save(q1, null, null);
+    	database.save(q2, null, null);
+    	
+    	
+    	List<Object> questions = csMod.searchQuestion("Ola, sou usuario moderador, posso excluir perguntas?", tag, null, null);
+    	
+    	assertTrue(questions.contains(q1));
+    	assertFalse(questions.contains(q2));
+		
+	}
 		
 	@Test
 	public void viewQuestionsTest() {											
@@ -314,6 +529,10 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		allQuestions.add(q2);
 		allQuestions.add(q3);
 		
+		database.save(q1, null, null);
+		database.save(q2, null, null);
+		database.save(q3, null, null);
+		
 		assertEquals(allQuestions, csUser.viewQuestions());
 		assertTrue(allQuestions.size() == csUser.viewQuestions().size());
 		
@@ -322,6 +541,7 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		assertFalse(allQuestions.size() == csUser.viewQuestions().size());
 	}
 	
+
 	@Test
 	public void viewCommentsTest() {							//LISI
 	
@@ -337,13 +557,14 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		assertTrue(q1.getComments().size() == 1);
 		
 	}
+
 	@Test
 	public void viewAnswersTest() {							//LISI
 	
 	    List <Answer> listaAnswers = new ArrayList<>();
 		
 		Answer a1 = new Answer( userReg, "Parece que sim!");
-		Answer a2 = new Answer( userReg, "Acho que nï¿½o!");
+		Answer a2 = new Answer( userReg, "Acho que nao!");
 		
 		listaAnswers.add(a1);
 		listaAnswers.add(a2);
@@ -358,5 +579,4 @@ Question q1 = new Question("Minha Pergunta", "To cheio de problema, alguem me aj
 		assertEquals(a1,q1.getBestAnswer());
 	}
 	
-*/
 }

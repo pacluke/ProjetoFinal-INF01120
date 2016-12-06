@@ -5,4 +5,4 @@
  * @author lucasflores
  *
  */
-package project.Permissions;
+package project.Permissions.test;

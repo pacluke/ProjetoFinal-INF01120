@@ -62,7 +62,7 @@ public class ContentServicesImpl implements ContentServices {
 
 	@Override
 	public void selectBestAnswer(Question question, User user, Answer answer) throws Exception {			//RENAN	
-		check.Permission(user, Credential.MODERATOR);
+		check.Permission(user, Credential.REGISTERED_USER);
 		
 		if(user == question.getAuthor())	//question gets updated either if the person
 		{															//doing it is the author or if it's a moderator or higher.
@@ -70,6 +70,13 @@ public class ContentServicesImpl implements ContentServices {
 			question.setBestAnswer(answer);
 			database.save(question, null, null);
 		}	
+		
+		else{
+			check.Permission(user, Credential.MODERATOR);
+			database.remove(question, null, null);
+			question.setBestAnswer(answer);
+			database.save(question, null, null);
+		}
 		
 	}
 
@@ -85,15 +92,21 @@ public class ContentServicesImpl implements ContentServices {
 	@Override
 	public void editQuestion(User user, String text, Question question) throws Exception{			//RENAN
 		
-		check.Permission(user, Credential.MODERATOR);
+		check.Permission(user, Credential.REGISTERED_USER);
 		
 		if(user == question.getAuthor()){	//question gets updated either if the person															//doing it is the author or if it's a moderator or higher.
 			database.remove(question, null, null);
 			question.setText(text);
 			database.save(question, null, null);
 		}
+		
+		else{
+			check.Permission(user, Credential.MODERATOR);
+			database.remove(question, null, null);
+			question.setText(text);
+			database.save(question, null, null);
+		}
 	}
-
 	@Override
 	public void removeComment(User user, Comment comment, Question question, Answer answer) throws Exception{			//LISI
 		check.Permission(user, Credential.REGISTERED_USER);
@@ -108,26 +121,24 @@ public class ContentServicesImpl implements ContentServices {
 			}
 		}
 		
-		else {
-			check.Permission(user, Credential.MODERATOR);
-			if (answer == null){
-				database.remove(comment, question, null);
-			}
-			
-			else {
-				database.remove(comment, answer, question);
-			}
-		}
+		
 		
 	}
 
 	@Override
-	public void removeQuestion(User user, Question question) throws Exception{			//LISI
-		check.Permission(user, Credential.MODERATOR);
-		
-		if(user == question.getAuthor()){															
+	public void removeQuestion(User user, Question question) throws Exception{	
+		//LISI
+		if(user == question.getAuthor()){	
+			check.Permission(user, Credential.REGISTERED_USER);
 			database.remove(question, null, null);
 		}
+		
+		
+		else{
+			check.Permission(user, Credential.MODERATOR);
+			database.remove(question, null, null);		
+		}
+
 	}
 
 	@Override

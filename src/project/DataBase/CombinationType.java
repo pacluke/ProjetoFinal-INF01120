@@ -1,6 +1,6 @@
 package project.DataBase;
 
-public enum CominationType {
+public enum CombinationType {
 	
 	USER_NULL(1),
 	ANSWER_QUESTION(2),
@@ -12,7 +12,7 @@ public enum CominationType {
 	
 	private int value;
 	
-	CominationType(int value){
+	CombinationType(int value){
 		this.value = value;
 	}
 	
