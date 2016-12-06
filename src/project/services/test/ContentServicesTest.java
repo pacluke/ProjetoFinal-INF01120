@@ -80,17 +80,9 @@ public class ContentServicesTest {
 		cs[3] = new ContentServicesImpl(database, user[3], check);
 		cs[4] = new ContentServicesImpl(database, user[4], check);
 		
-		
-		Tag tag1 = new Tag("Computador");
-		Tag tag2 = new Tag("Java");
-		Tag tag3 = new Tag("TCP");
-		Tag tag4 = new Tag("Complexidade");
-		Tag tag5 = new Tag("OrgB");
-			
-		List<Tag> listaTag = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
-		
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void addQuestionTest() throws Exception{
 		
@@ -122,7 +114,7 @@ public class ContentServicesTest {
 			List<Object> questions = database.search(null);
 			
 			for(int i = 0; i < questions.size(); i++){
-				if((((Question)questions.get(i)).getTitle() == q[j].getTitle()) && (((Question)questions.get(i)).getText() == q[j].getText()) && (((Question)questions.get(i)).getDate().getDate() == q[j].getDate().getDate())){
+				if((((Question)questions.get(i)).getTitle() == q[j].getTitle()) && (((Question)questions.get(i)).getText() == q[j].getText()) && ((Question)questions.get(i)).getTags() == q[j].getTags() && (((Question)questions.get(i)).getDate().getDate() == q[j].getDate().getDate())){
 					feedback[j] = true;
 				}
 			}
@@ -130,6 +122,7 @@ public class ContentServicesTest {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void  answerQuestionTest() throws Exception{
 		
@@ -180,6 +173,7 @@ public class ContentServicesTest {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void  addCommentTest() throws Exception{
 		
@@ -217,7 +211,6 @@ public class ContentServicesTest {
 		List<Comment> comments = new ArrayList<Comment>();
 		List<Comment> commentsAnswers = new ArrayList<Comment>();
 		
-		List<Answer> answers = new ArrayList<Answer>();
 		boolean[] feedback = new boolean[8];
 		feedback[1] = false;
 		feedback[2] = false;
@@ -273,6 +266,7 @@ public class ContentServicesTest {
 
 	
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void  selectBestAnswerTest() throws Exception{
 		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
@@ -321,6 +315,7 @@ public class ContentServicesTest {
 	}
 	
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void  closeQuestionTest() throws Exception{
 		Question q1 = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?2", listaTag, user[1]);
@@ -355,6 +350,7 @@ public class ContentServicesTest {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void editQuestionTest() throws Exception{
 		
@@ -371,9 +367,9 @@ public class ContentServicesTest {
 		database.save(q2, null, null);
 		database.save(q3, null, null);
 		
-		cs[1].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA", q1);
-		cs[2].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA2222", q2);
-		cs[3].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA3333", q3);
+		cs[1].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A", q1);
+		cs[2].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A2222", q2);
+		cs[3].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A3333", q3);
 		
 		
 		List<Object> questions = database.search(null);
@@ -381,7 +377,7 @@ public class ContentServicesTest {
 		for(int i = 0; i < questions.size(); i++){
 			if((((Question)questions.get(i)).getTitle() == q1.getTitle()) && (((Question)questions.get(i)).getText() == q1.getText()) && (((Question)questions.get(i)).getDate().getDate() == q1.getDate().getDate())){
 				
-				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA" == (((Question)questions.get(i)).getText()));
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A" == (((Question)questions.get(i)).getText()));
 		
 			}
 		}
@@ -389,7 +385,7 @@ public class ContentServicesTest {
 		for(int i = 0; i < questions.size(); i++){
 			if((((Question)questions.get(i)).getTitle() == q2.getTitle()) && (((Question)questions.get(i)).getText() == q2.getText()) && (((Question)questions.get(i)).getDate().getDate() == q2.getDate().getDate())){
 				
-				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA2222" == (((Question)questions.get(i)).getText()));
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A2222" == (((Question)questions.get(i)).getText()));
 		
 			}
 		}
@@ -397,7 +393,7 @@ public class ContentServicesTest {
 		for(int i = 0; i < questions.size(); i++){
 			if((((Question)questions.get(i)).getTitle() == q3.getTitle()) && (((Question)questions.get(i)).getText() == q3.getText()) && (((Question)questions.get(i)).getDate().getDate() == q3.getDate().getDate())){
 				
-				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENÇA3333" == (((Question)questions.get(i)).getText()));
+				assertTrue("NOVO TEXTO MUDADISSIMO COM MUITA DIFERENï¿½A3333" == (((Question)questions.get(i)).getText()));
 		
 			}
 		}
@@ -416,8 +412,8 @@ public class ContentServicesTest {
 		Comment c1 = new Comment("Nao entendi sua pergunta.", userReg);
 		Comment c2 = new Comment("Voce devia ser mais especifico.", userReg);
 		
-		Comment c3 = new Comment("Isso é um comentario!", userAdm);
-		Comment c4 = new Comment("Isso tambem é um comentário!", userMod);
+		Comment c3 = new Comment("Isso ï¿½ um comentario!", userAdm);
+		Comment c4 = new Comment("Isso tambem ï¿½ um comentï¿½rio!", userMod);
 		Comment c5 = new Comment("Outro comentario genial de um usuario", userReg);
 		
 		
