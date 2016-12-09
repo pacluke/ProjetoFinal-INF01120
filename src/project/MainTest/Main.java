@@ -14,13 +14,20 @@ import project.services.*;
 
 import org.junit.Test;
 
-public class MainTest {
+public class Main {
+	
+	/**
+	 * @Param args
+	 */
 	
 	DataBaseImpl db = new DataBaseImpl();
 	Permissions check = new Permissions();
 	User moderator = new User("Adelaide", "adelaide@inf.ufrgs.br", 243324, "adelaide_v1d4l0k4", false, Credential.MODERATOR);
 	User admin = new User("Cleverson", "cleverson@inf.ufrgs.br", 251234, "cleversindosbrother", false, Credential.ADMIN);
 	
+	public static void main(String[] args){		
+		System.out.println("Testes!");
+	}
 	
 	
 	@Before
