@@ -40,10 +40,10 @@ public class UserServicesImplTest {
 	@Test
 	public void RegisterTest(){
 		
-		User userTest = userService.Register( "Joao", "joao@gmail.com",105, "qwerqwe");
+		User userTest = userService.register( "Joao", "joao@gmail.com",105, "qwerqwe");
 		assertTrue(userTest.getCredential() == Credential.REGISTERED_USER);
 		
-		User userTest2 = userService.Register( "Juliana", "juju@gmail.com",103, "asdzxc");
+		User userTest2 = userService.register( "Juliana", "juju@gmail.com",103, "asdzxc");
 		assertTrue(userTest2.getCredential() == Credential.REGISTERED_USER);
 		
 	}
@@ -51,18 +51,18 @@ public class UserServicesImplTest {
 	
 	@Test
 	public void LoginTest(){
-		userService.Register("cassandra", "cassandra@gmail.com", 101, "asdzx");
-		User userLog = userService.Login("cassandra@gmail.com", "asdzx");
+		userService.register("cassandra", "cassandra@gmail.com", 101, "asdzx");
+		User userLog = userService.login("cassandra@gmail.com", "asdzx");
 		assertTrue(userLog.getCredential() != Credential.ANONYMOUS);
 	}
 	
 	
 	@Test
 	public void logOutTest(){
-		assertTrue( userService.LogOut(userAdm).getCredential() == Credential.ANONYMOUS);
-		assertTrue( userService.LogOut(userAnon).getCredential() == Credential.ANONYMOUS );
-		assertTrue( userService.LogOut(userMod).getCredential() == Credential.ANONYMOUS );
-		assertTrue( userService.LogOut(userReg).getCredential() == Credential.ANONYMOUS );
+		assertTrue( userService.logOut(userAdm).getCredential() == Credential.ANONYMOUS);
+		assertTrue( userService.logOut(userAnon).getCredential() == Credential.ANONYMOUS );
+		assertTrue( userService.logOut(userMod).getCredential() == Credential.ANONYMOUS );
+		assertTrue( userService.logOut(userReg).getCredential() == Credential.ANONYMOUS );
 	}
 
 	@Test
@@ -70,11 +70,11 @@ public class UserServicesImplTest {
 		
 		userService.actualUser = userAdm;
 		
-		userService.BlockUser(userReg);
+		userService.blockUser(userReg);
 		assertTrue(userReg.getIsBlocked() == true);
-		userService.BlockUser(userMod);
+		userService.blockUser(userMod);
 		assertTrue(userMod.getIsBlocked() == true);
-		userService.BlockUser(userAdm);
+		userService.blockUser(userAdm);
 		assertTrue(userAdm.getIsBlocked() == false);
 	}
 	

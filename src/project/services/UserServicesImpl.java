@@ -23,7 +23,7 @@ public class UserServicesImpl implements UserServices {
 	}	
 
 	@Override
-	public User Register(String name, String email, long studentID, String password) {	
+	public User register(String name, String email, long studentID, String password) {	
 		User userToRegister = new User(name, email, studentID, password, false, Credential.REGISTERED_USER);
 		database.save(userToRegister, null, null);		
 		return userToRegister;
@@ -39,7 +39,7 @@ public class UserServicesImpl implements UserServices {
 	}
 
 	@Override
-	public User Login(String email, String password) {
+	public User login(String email, String password) {
 		User search = new User();
 		
 		if (!(isLoggedIn(this.actualUser))){
@@ -59,14 +59,14 @@ public class UserServicesImpl implements UserServices {
 	
 
 	@Override
-	public User LogOut(User user) {
+	public User logOut(User user) {
 		this.actualUser = new User(); 
 		return this.actualUser;
 	}
 
 	@Override
 	//permission moderator or more
-	public void BlockUser(User user) throws Exception{
+	public void blockUser(User user) throws Exception{
 		
 		boolean userIsNotAdmin = (user.getCredential() != Credential.ADMIN);
 		boolean userIsNotAnonymous = (user.getCredential() != Credential.ANONYMOUS);
