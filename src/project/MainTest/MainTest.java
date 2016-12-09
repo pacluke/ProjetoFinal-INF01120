@@ -40,20 +40,20 @@ public class MainTest {
 		UserServicesImpl userServicesExample = new UserServicesImpl(db, newUser, check);
 		
 		/* registrando */
-		userServicesExample.Register("Renan", "renan@inf.ufrgs.br", 243534, "renazinho100%guaiba");
+		userServicesExample.register("Renan", "renan@inf.ufrgs.br", 243534, "renazinho100%guaiba");
 		
 		/* login */
-		userServicesExample.Login("renan@inf.ufrgs.br", "renazinho100%guaiba");
+		userServicesExample.login("renan@inf.ufrgs.br", "renazinho100%guaiba");
 		assertTrue(db.find(newUser, "renan@inf.ufrgs.br") == userServicesExample.actualUser);
 		
 		/* logout */
-		userServicesExample.LogOut(newUser);
+		userServicesExample.logOut(newUser);
 		assertTrue(newUser.getCredential() == Credential.ANONYMOUS);
 		
 		/** CRIANDO CONTEUDO **/
 		
 		/* login */
-		User registeredUser = userServicesExample.Login("renan@inf.ufrgs.br", "renazinho100%guaiba");
+		User registeredUser = userServicesExample.login("renan@inf.ufrgs.br", "renazinho100%guaiba");
 		ContentServicesImpl contentServicesExample = new ContentServicesImpl(db, registeredUser, check);
 		
 		Tag tag1 = new Tag("Formais");
@@ -82,7 +82,7 @@ public class MainTest {
 		/** BLOQUEANDO USUARIO **/
 		
 		userServicesExample = new UserServicesImpl(db, moderator, check);	
-		userServicesExample.BlockUser(registeredUser);
+		userServicesExample.blockUser(registeredUser);
 		assertTrue(((User)db.find(registeredUser, "renan@inf.ufrgs.br")).getIsBlocked());
 		
 		
