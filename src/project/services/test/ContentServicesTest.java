@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import project.DataBase.*;
-import project.Permissions.*;
 import project.domain.*;
+import project.Permissions.*;
 import project.services.*;
 
 public class ContentServicesTest {
@@ -110,7 +110,7 @@ public class ContentServicesTest {
 		for (int j = 1; j<4; j++)
 		{
 			
-			cs[j].addQuestion(title[j], text, user[j], listaTag);
+			cs[j].addQuestion(title[j], text, listaTag);
 			List<Object> questions = database.search(null);
 			
 			for(int i = 0; i < questions.size(); i++){
@@ -131,9 +131,9 @@ public class ContentServicesTest {
 		database.save(q1,  null, null);
 		
 		//cs[0].answerQuestion(q1, "Ola, sou usuario anonimo, posso responder perguntas?", user[0]);	//permission denied
-		cs[1].answerQuestion(q1, "Ola, sou usuario registrado, posso responder perguntas?", user[1]);
-		cs[2].answerQuestion(q1, "Ola, sou moderador, posso responder perguntas?", user[2]);
-		cs[3].answerQuestion(q1, "Ola, sou admin, posso responder perguntas?", user[3]);
+		cs[1].answerQuestion(q1, "Ola, sou usuario registrado, posso responder perguntas?");
+		cs[2].answerQuestion(q1, "Ola, sou moderador, posso responder perguntas?");
+		cs[3].answerQuestion(q1, "Ola, sou admin, posso responder perguntas?");
 		
 		Answer[] a = new Answer[4];
 		
@@ -189,13 +189,13 @@ public class ContentServicesTest {
 		
 			
 		//cs[0].answerQuestion(q1, "Ola, sou usuario anonimo, posso responder perguntas?", user[0]);
-		cs[1].addComment("Ola, sou usuario registrado, posso comentar em perguntas?", user[1], q1, null);
-		cs[2].addComment("Ola, sou moderador, posso comentar em perguntas?", user[2], q1, null);
-		cs[3].addComment("Ola, sou admin, posso comentar em perguntas?", user[3], q1, null);
+		cs[1].addComment("Ola, sou usuario registrado, posso comentar em perguntas?", q1, null);
+		cs[2].addComment("Ola, sou moderador, posso comentar em perguntas?", q1, null);
+		cs[3].addComment("Ola, sou admin, posso comentar em perguntas?", q1, null);
 		
-		cs[1].addComment("Ola, sou usuario registrado, posso comentar em repostas tambem?", user[1], q2, a1);
-		cs[2].addComment("Ola, sou moderador, posso comentar em repostas tambem", user[2], q2, a1);
-		cs[3].addComment("Ola, sou admin, posso comentar em repostas tambem", user[3], q2, a1);
+		cs[1].addComment("Ola, sou usuario registrado, posso comentar em repostas tambem?", q2, a1);
+		cs[2].addComment("Ola, sou moderador, posso comentar em repostas tambem", q2, a1);
+		cs[3].addComment("Ola, sou admin, posso comentar em repostas tambem", q2, a1);
 		
 		Comment[] c = new Comment[8];
 		
@@ -283,9 +283,9 @@ public class ContentServicesTest {
 		database.save(a1, q2, null);
 		database.save(a1, q3, null);
 		
-		cs[1].selectBestAnswer(q1, user[1], a1);	//same user selecting best answer
-		cs[2].selectBestAnswer(q2, user[2], a1);	//mod selecting best answer
-		cs[3].selectBestAnswer(q3, user[3], a1);	//adm selecting best answer
+		cs[1].selectBestAnswer(q1, a1);	//same user selecting best answer
+		cs[2].selectBestAnswer(q2, a1);	//mod selecting best answer
+		cs[3].selectBestAnswer(q3, a1);	//adm selecting best answer
 		
 		List<Object> questions = database.search(null);
 		
@@ -325,8 +325,8 @@ public class ContentServicesTest {
 		database.save(q1,  null, null);
 
 											//only mods and adms can close questions
-		cs[2].closeQuestion(user[2], q1);	//mod selecting best answer
-		cs[3].closeQuestion(user[3], q2);	//adm selecting best answer
+		cs[2].closeQuestion(q1);	//mod selecting best answer
+		cs[3].closeQuestion(q2);	//adm selecting best answer
 		
 		List<Object> questions = database.search(null);
 		
@@ -367,9 +367,9 @@ public class ContentServicesTest {
 		database.save(q2, null, null);
 		database.save(q3, null, null);
 		
-		cs[1].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A", q1);
-		cs[2].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A2222", q2);
-		cs[3].editQuestion(user[1], "NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A3333", q3);
+		cs[1].editQuestion("NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A", q1);
+		cs[2].editQuestion("NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A2222", q2);
+		cs[3].editQuestion("NOVO TEXTO MUDADISSIMO COM MUITA DIFEREN�A3333", q3);
 		
 		
 		List<Object> questions = database.search(null);
@@ -431,13 +431,10 @@ public class ContentServicesTest {
 		
 		assertTrue(q1.getComments().size() == 5);
 		
-		csUser.removeComment(userReg, c1, q1, null);
-		csUser.removeComment(userReg, c2, q1, null);
-		csUser.removeComment(userAdm, c3, q1, null);
-		csUser.removeComment(userMod, c4, q1, null);
-		csUser.removeComment(userReg, c5, q1, null);
+		csUser.removeComment(c1, q1, null);
+		csUser.removeComment(c2, q1, null);
 		
-		assertTrue(q1.getComments().size() == 0);
+		assertTrue(q1.getComments().size() == 3);
 	}
 	
 	@Test
@@ -456,7 +453,7 @@ public class ContentServicesTest {
 		
 		boolean passou = true;
 		
-		csMod.removeQuestion(userReg, q1);
+		csMod.removeQuestion(q1);
 		
 		
 		List<Object> questions = database.search(null);
@@ -469,7 +466,7 @@ public class ContentServicesTest {
 
 		assertTrue(passou);
 		
-		csMod.removeQuestion(userMod, q3);
+		csMod.removeQuestion(q3);
 		passou = true;
 		while(questionsIter.hasNext()){
 			if(questionsIter.next() == q3)
@@ -479,7 +476,7 @@ public class ContentServicesTest {
 		assertTrue(passou);
 		
 		
-		csAdm.removeQuestion(userReg, q4);
+		csAdm.removeQuestion(q4);
 		passou = true;
 		while(questionsIter.hasNext()){
 			if(questionsIter.next() == q4)

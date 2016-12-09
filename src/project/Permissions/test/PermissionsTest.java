@@ -7,8 +7,9 @@ import java.util.List;
 
 import org.junit.Before;
 
-import project.Permissions.*;
 import project.domain.*;
+import project.Permissions.*;
+
 import org.junit.Test;
 
 public class PermissionsTest {

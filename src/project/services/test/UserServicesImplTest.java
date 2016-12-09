@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import project.DataBase.DataBaseImpl;
-import project.Permissions.Permissions;
 import project.domain.Credential;
 import project.domain.User;
+import project.Permissions.Permissions;
 import project.services.UserServicesImpl;
 
 public class UserServicesImplTest {

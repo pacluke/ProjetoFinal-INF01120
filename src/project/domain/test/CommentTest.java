@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import project.domain.Comment;
 import project.domain.Credential;
 import project.domain.User;
-import project.domain.Comment;
 
 import org.junit.Before;
 

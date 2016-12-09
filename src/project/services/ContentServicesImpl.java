@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import project.DataBase.DataBaseImpl;
-import project.domain.Answer;
-import project.domain.Comment;
-import project.domain.Credential;
-import project.domain.Question;
-import project.domain.Tag;
-import project.domain.User;
+import project.domain.*;
 import project.Permissions.*;
 
 public class ContentServicesImpl implements ContentServices {
@@ -25,19 +20,21 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public void addQuestion(String title, String text, User user, List<Tag> tags) throws Exception {			//RENAN
-		Question q1 = new Question(title, text, tags, user);
+	public void addQuestion(String title, String text, List<Tag> tags) throws Exception {			//RENAN
+		Question q1 = new Question(title, text, tags, this.actualUser);
 		
-		check.Permission(user, Credential.REGISTERED_USER);
-		database.save(q1, null, null);
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
+		
+		if(!this.actualUser.getIsBlocked())
+			database.save(q1, null, null);
 	}
 
 	@Override
-	public void answerQuestion(Question question, String text, User user) throws Exception {			//RENAN
+	public void answerQuestion(Question question, String text) throws Exception {			//RENAN
 
-		Answer a1 = new Answer(user, text);
+		Answer a1 = new Answer(this.actualUser, text);
 		
-		check.Permission(user, Credential.REGISTERED_USER);
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
 		
 		if(question.getIsOpen()){	//user needs to be registered AND question needs to be open
 			database.save(a1, question, null);
@@ -45,10 +42,10 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public void addComment(String text, User user, Question question, Answer answer) throws Exception{			//RENAN
+	public void addComment(String text, Question question, Answer answer) throws Exception{			//RENAN
 		
-		Comment c1 = new Comment(text, user);
-		check.Permission(user, Credential.REGISTERED_USER);
+		Comment c1 = new Comment(text, this.actualUser);
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
 		
 		if(question.getIsOpen()){	//user needs to be registered AND question needs to be open
 			if(answer == null){
@@ -61,10 +58,10 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public void selectBestAnswer(Question question, User user, Answer answer) throws Exception {			//RENAN	
-		check.Permission(user, Credential.REGISTERED_USER);
+	public void selectBestAnswer(Question question, Answer answer) throws Exception {			//RENAN	
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
 		
-		if(user == question.getAuthor())	//question gets updated either if the person
+		if(this.actualUser == question.getAuthor())	//question gets updated either if the person
 		{															//doing it is the author or if it's a moderator or higher.
 			database.remove(question, null, null);
 			question.setBestAnswer(answer);
@@ -72,7 +69,7 @@ public class ContentServicesImpl implements ContentServices {
 		}	
 		
 		else{
-			check.Permission(user, Credential.MODERATOR);
+			check.Permission(this.actualUser, Credential.MODERATOR);
 			database.remove(question, null, null);
 			question.setBestAnswer(answer);
 			database.save(question, null, null);
@@ -81,8 +78,8 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public void closeQuestion(User user, Question question) throws Exception{			//RENAN
-		check.Permission(user, Credential.MODERATOR);
+	public void closeQuestion(Question question) throws Exception{			//RENAN
+		check.Permission(this.actualUser, Credential.MODERATOR);
 		
 		database.remove(question, null, null);
 		question.setIsOpen(false);
@@ -90,28 +87,28 @@ public class ContentServicesImpl implements ContentServices {
 	}
 
 	@Override
-	public void editQuestion(User user, String text, Question question) throws Exception{			//RENAN
+	public void editQuestion(String text, Question question) throws Exception{			//RENAN
 		
-		check.Permission(user, Credential.REGISTERED_USER);
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
 		
-		if(user == question.getAuthor()){	//question gets updated either if the person															//doing it is the author or if it's a moderator or higher.
+		if(this.actualUser == question.getAuthor()){	//question gets updated either if the person															//doing it is the author or if it's a moderator or higher.
 			database.remove(question, null, null);
 			question.setText(text);
 			database.save(question, null, null);
 		}
 		
 		else{
-			check.Permission(user, Credential.MODERATOR);
+			check.Permission(this.actualUser, Credential.MODERATOR);
 			database.remove(question, null, null);
 			question.setText(text);
 			database.save(question, null, null);
 		}
 	}
 	@Override
-	public void removeComment(User user, Comment comment, Question question, Answer answer) throws Exception{			//LISI
-		check.Permission(user, Credential.REGISTERED_USER);
+	public void removeComment(Comment comment, Question question, Answer answer) throws Exception{			//LISI
+		check.Permission(this.actualUser, Credential.REGISTERED_USER);
 		
-		if(user == comment.getAuthor()){															
+		if(this.actualUser == comment.getAuthor()){															
 			if (answer == null){
 				database.remove(comment, question, null);
 			}
@@ -121,21 +118,31 @@ public class ContentServicesImpl implements ContentServices {
 			}
 		}
 		
+		else {
+			
+			check.Permission(this.actualUser, Credential.MODERATOR);
+			if (answer == null){
+				database.remove(comment, question, null);
+			}
 		
-		
+			else {
+				database.remove(comment, answer, question);
+			}
+		}
+
 	}
 
 	@Override
-	public void removeQuestion(User user, Question question) throws Exception{	
+	public void removeQuestion(Question question) throws Exception{	
 		//LISI
-		if(user == question.getAuthor()){	
-			check.Permission(user, Credential.REGISTERED_USER);
+		if(this.actualUser == question.getAuthor()){	
+			check.Permission(this.actualUser, Credential.REGISTERED_USER);
 			database.remove(question, null, null);
 		}
 		
 		
 		else{
-			check.Permission(user, Credential.MODERATOR);
+			check.Permission(this.actualUser, Credential.MODERATOR);
 			database.remove(question, null, null);		
 		}
 

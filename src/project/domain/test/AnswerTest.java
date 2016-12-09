@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import project.domain.Answer;
+import project.domain.Comment;
 import project.domain.Credential;
 import project.domain.User;
-import project.domain.Comment;
-import project.domain.Answer;
 
 import java.util.ArrayList;
 import java.util.List;

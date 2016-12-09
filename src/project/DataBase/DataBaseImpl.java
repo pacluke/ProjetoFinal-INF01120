@@ -1,6 +1,7 @@
 package project.DataBase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +16,91 @@ public class DataBaseImpl implements DataBase<Object>{
 	@Override
 	public void initData() {
 		
+		User registeredUser = new User("Arthur", "arthurL@gmail.com", 007, "jesus9", false, Credential.REGISTERED_USER);
+		User registeredUser2 = new User("Tais", "tais@gmail.com", 007, "jesus9", false, Credential.REGISTERED_USER);
+		User registeredUser3 = new User("Joao", "joao@gmail.com", 001, "qwerqwe", false, Credential.REGISTERED_USER);
 		
+		User moderatorUser = new User("Kath", "Kath@bol.com", 006, "helloe56", false, Credential.MODERATOR);
+		User moderatorUser2 = new User("Marisa", "marisa@bol.com", 002, "ewrwer", false, Credential.MODERATOR);
+		
+		User userRegC = new User("Arthur", "arthurL@gmail.com", 007, "jesus9", false, Credential.REGISTERED_USER);
+		User userAdmC = new User("Caroline", "Caroline@yahoo.com", 2314, "top555", false, Credential.ADMIN);
+		User userRegB = new User("James", "james@gmail.com", 004, "ghu85", false, Credential.REGISTERED_USER);
+		User userModB = new User("Bruna", "bruna@bol.com", 005, "uk4545r", true, Credential.MODERATOR);
+		User userAdmB = new User("Lisa", "lisa@yahoo.com", 006, "wert5", false, Credential.ADMIN);
+		User userAdmA = new User("Joana", "joana@yahoo.com", 003, "qweiuqweyrrqwe", false, Credential.ADMIN);
+
+	/*	Answer answerA = new Answer(moderatorUser, "Creio que sim!");
+		Answer answerB = new Answer(moderatorUser2, "36 créditos provavelmente.");
+		Answer answerC = new Answer(registeredUser3, "Não sei, veja na página do curso.");
+		Answer answerD = new Answer(userRegB, "Sim, pois o céu está nublado.");
+		Answer answerE = new Answer(userRegC, "Começam antes do natal.");
+		Answer answerF = new Answer(userRegC, "Não pode.");
+		Answer answerG = new Answer(userAdmA, "Moderadores podem");
+		Answer answerH = new Answer(userAdmB, "Creio que não.");
+
+		Comment commentA = new Comment("Não entendi sua pergunta.", moderatorUser2);
+		Comment commentB = new Comment("Essa pergunta já foi feita", moderatorUser2);
+		Comment commentC = new Comment("Você devia ter colocado mais tags", moderatorUser2);
+		Comment commentD = new Comment("A pergunta não se encaixa nessa categoria.", registeredUser3);
+		Comment commentE = new Comment("Acho que essa pergunta já existe.", userRegB);
+		Comment commentF = new Comment("Poderia reformular a pergunta?.", userRegB);
+		Comment commentG = new Comment("Creio que a primeira resposta seja a certa.", userRegC);
+		Comment commentH = new Comment("Creio que a segunda resposta seja a certa.", userAdmA);
+		Comment commentI = new Comment("Creio que a segunda resposta seja a certa.", userAdmB);
+		
+	*/
+
+		Tag tag1 = new Tag("Computador");
+		Tag tag2 = new Tag("Java");
+		Tag tag3 = new Tag("TCP");
+		Tag tag4 = new Tag("Complexidade");
+		Tag tag5 = new Tag("OrgB");
+				
+		List<Tag> listaTag = Arrays.asList(tag1, tag2, tag3, tag4, tag5);
+
+		Question questionA = new Question("Como tratar exceções em Java?", "Alguém pode me explicar como implementar isso?",   listaTag, userRegC);
+
+		Question questionB = new Question("Minha Pergunta", "Ola, sou usuario registrado, posso fazer pergunta?", listaTag, userRegB);
+
+		Question questionC = new Question("Posso bloquear alguém?", "Usuário moderador pode bloquear?",   listaTag, moderatorUser2);
+
+		Question questionD = new Question("Dúvida usuário registrado", "Usuário registrado pode excluir outras perguntas?", listaTag, registeredUser3);
+
+		Question questionE = new Question("Minha Pergunta", "Ola, sou usuario moderador, posso excluir comentários?", listaTag, moderatorUser2);
+		
+		Question questionF = new Question("Dúvida créditos complementares", "Qual o número de créditos complementares da CIC?", listaTag, moderatorUser2);
+
+		Question questionG = new Question("Dúvida créditos complementares", "Qual o número de créditos complementares da ECP?", listaTag, userAdmA);
+
+		Question questionH = new Question("Minha Pergunta", "Ola, será que vai chover?", listaTag, userAdmB);
+
+		Question questionI = new Question("Minha Pergunta", "Ola, que dia começam as férias?", listaTag, userAdmC);
+		
+		Question questionJ = new Question("Tem como ancelar 2016?", "Alguém pode me explicar como fazer isso?",   listaTag, userRegC);
+		
+		users.add(registeredUser);
+		users.add(registeredUser2);
+		users.add(registeredUser3);
+		users.add(moderatorUser);
+		users.add(moderatorUser2);	
+		users.add(userAdmA);
+		users.add(userAdmB);
+		users.add(userAdmC);
+		users.add(userRegB);
+		users.add(userRegC);
+		users.add(userModB);		
+		
+		questions.add(questionJ);
+		questions.add(questionI);
+		questions.add(questionH);
+		questions.add(questionG);
+		questions.add(questionF);
+		questions.add(questionE);
+		questions.add(questionD);
+		questions.add(questionC);
+		questions.add(questionB);
+		questions.add(questionA);	
 		
 	}
 
